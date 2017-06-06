@@ -1,0 +1,64 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+  <div class="col-lg-10">
+    <h2>Client edit</h2>
+    <ol class="breadcrumb">
+      <li>
+        <a href="index.html">Home</a>
+      </li>
+      <li>
+        <a>E-commerce</a>
+      </li>
+      <li class="active">
+        <strong>Product edit</strong>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="tabs-container">
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#tab-1"> Client info</a></li>
+        </ul>
+        <div class="tab-content">
+          <div id="tab-1" class="tab-pane active">
+            <div class="panel-body">
+              <form class="form-edit" (submit)="onEditSubmit()">
+                <fieldset class="form-horizontal">
+                  <div class="form-group"><label class="col-sm-2 control-label">Name:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="name" name="name" type="text" class="form-control" placeholder="Name"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Phone:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="phone" name="phone" type="text" class="form-control" placeholder="Phone"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Email:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="email" name="email" type="text" class="form-control" placeholder="Email"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Status:</label>
+                    <div class="col-sm-10">
+                      <select [(ngModel)]="status" name="status" id="status" class="form-control" placeholder="Status">
+                        <option value="0" selected>Enabled</option>
+                        <option value="1">Disabled</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Address:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="address" name="address" type="text" class="form-control" placeholder="Address"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Order history:</label>
+                    <div class="col-sm-10"><div class="summernote"></div></div>
+                  </div>
+                  <!--<ng2-summernote [(ngModel)]="data" height="500" ></ng2-summernote>-->
+                  <input type="submit" value="submit" class="btn btn-success">
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

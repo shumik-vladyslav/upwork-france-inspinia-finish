@@ -1,0 +1,64 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+  <div class="col-lg-10">
+    <h2>Order edit</h2>
+    <ol class="breadcrumb">
+      <li>
+        <a href="index.html">Home</a>
+      </li>
+      <li>
+        <a>E-commerce</a>
+      </li>
+      <li class="active">
+        <strong>Order edit</strong>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="tabs-container">
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#tab-1"> Order info</a></li>
+        </ul>
+        <div class="tab-content">
+          <div id="tab-1" class="tab-pane active">
+            <div class="panel-body">
+              <form class="form-edit" (submit)="onEditSubmit()">
+                <fieldset class="form-horizontal">
+                  <div class="form-group"><label class="col-sm-2 control-label">Client Name:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="clientName" name="clientName" type="text" class="form-control" placeholder="Client Name"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Products:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="products" name="products" type="text" class="form-control" placeholder="Products"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Quantity:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="quantity" name="quantity" type="text" class="form-control" placeholder="Quantity"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Price paid/unpaid:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="paid" name="paid" type="text" class="form-control" placeholder="Price paid/unpaid"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Price Method:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="priceMethod" name="priceMethod" type="text" class="form-control" placeholder="Price Method"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Notes:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="notes" name="notes" type="text" class="form-control" placeholder="Notes"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Ticket Number:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="ticketNumber" name="ticketNumber" type="text" class="form-control" placeholder="Ticket Number"></div>
+                  </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Status:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="status" name="status" type="text" class="form-control" placeholder="Status"></div>
+                  </div>
+                  <input type="submit" value="submit" class="btn btn-success">
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

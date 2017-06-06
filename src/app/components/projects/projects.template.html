@@ -1,0 +1,91 @@
+<!-- Main view/routes wrapper-->
+<div class="row wrapper border-bottom white-bg page-heading">
+  <div class="col-lg-10">
+    <h2>Clients list</h2>
+    <ol class="breadcrumb">
+      <li>
+        <a href="index.html">Home</a>
+      </li>
+      <li>
+        <a>E-commerce</a>
+      </li>
+      <li class="active">
+        <strong>Product list</strong>
+      </li>
+    </ol>
+  </div>
+  <div class="col-lg-2">
+
+  </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+
+
+  <div class="ibox-content m-b-sm border-bottom">
+    <form class="form-edit" (submit)="onAddSubmit()">
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="product_name">Project</label>
+            <input type="text" id="project_name" [(ngModel)]="project" name="project" value="" placeholder="Project" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="product_name">Name</label>
+            <input type="text" id="product_name" [(ngModel)]="name" name="name" value="" placeholder="Name" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label class="control-label" for="price">Phone</label>
+            <input type="text" id="price" [(ngModel)]="phone" name="phone" value="" placeholder="Phone" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label class="control-label" for="quantity">Company</label>
+            <input type="text" id="quantity" [(ngModel)]="company" name="company" value="" placeholder="Company" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="control-label" for="completed">Completed</label>
+            <select [(ngModel)]="completed" name="completed" id="completed" class="form-control" placeholder="Completed">
+              <option value="1" selected>Canceled</option>
+              <option value="0">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label class="control-label" for="task">Task</label>
+            <input type="text" id="task" [(ngModel)]="task" name="task" value="" placeholder="Task" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label class="control-label" for="date">Date</label>
+            <input type="text" id="date" [(ngModel)]="date" name="date" value="" placeholder="Date" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label class="control-label" for="quantity">Action</label>
+            <input type="text" id="action" [(ngModel)]="action" name="action" value="" placeholder="Action" class="form-control">
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <button>Create client</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+
+</div>
+<!-- End page wrapper-->

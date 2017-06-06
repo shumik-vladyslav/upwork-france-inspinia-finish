@@ -1,0 +1,75 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "project": {
+    "name": "inspinia"
+  },
+  "apps": [
+    {
+      "root": "src",
+      "outDir": "dist",
+      "assets": [
+        "assets",
+        "favicon.ico"
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "test.ts",
+      "tsconfig": "tsconfig.app.json",
+      "testTsconfig": "tsconfig.spec.json",
+      "prefix": "app",
+      "styles": [
+        "../node_modules/bootstrap/dist/css/bootstrap.css",
+        "../node_modules/font-awesome/css/font-awesome.css",
+        "../node_modules/animate.css/animate.min.css",
+        "../vendor/footable/footable.core.css",
+        "../vendor/summernote/summernote.css",
+        "../vendor/summernote/summernote-bs3.css",
+        "../node_modules/chosen-js/chosen.css",
+        "styles.scss"
+      ],
+      "scripts": [
+
+        "../node_modules/jquery/dist/jquery.js",
+        "../vendor/bootstrap/bootstrap.min.js",
+        "../node_modules/metismenu/dist/metisMenu.js",
+        "../node_modules/jquery-sparkline/jquery.sparkline.js",
+        "../vendor/pace/pace.min.js",
+        "../vendor/footable/footable.all.min.js",
+        "../vendor/summernote/summernote.min.js",
+        "../vendor/slimscroll/jquery.slimscroll.min.js",
+        "../node_modules/chosen-js/chosen.jquery.js"
+      ],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
+      }
+    }
+  ],
+  "e2e": {
+    "protractor": {
+      "config": "./protractor.conf.js"
+    }
+  },
+  "lint": [
+    {
+      "project": "src/tsconfig.app.json"
+    },
+    {
+      "project": "src/tsconfig.spec.json"
+    },
+    {
+      "project": "e2e/tsconfig.e2e.json"
+    }
+  ],
+  "test": {
+    "karma": {
+      "config": "./karma.conf.js"
+    }
+  },
+  "defaults": {
+    "styleExt": "css",
+    "component": {}
+  }
+}

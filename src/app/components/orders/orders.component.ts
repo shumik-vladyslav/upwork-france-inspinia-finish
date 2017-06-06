@@ -162,7 +162,7 @@ prNames;
         .filter(item => order.products.includes(item.name))
         .reduce((acc, item) => acc += +item.price, 0);
         console.log(`price summary : ${priceSumm}`);
-        
+
         order.orderSum = this.editOrderModel.quantity * priceSumm;
 
         // firebase save

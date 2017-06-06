@@ -54,7 +54,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     },
     yaxes: [{
       position: "left",
-      max: 30,
+      max: 5,
       color: "#d5d5d5",
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,

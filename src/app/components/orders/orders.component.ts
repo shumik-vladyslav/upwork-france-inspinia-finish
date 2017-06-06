@@ -88,6 +88,18 @@ prNames;
         error => console.log(`error: ${error.message}`)
       );
     footable();
+
+    setTimeout(() => {
+      for(let i = 0; i < 12; i++){
+        let order = new Order();
+        order.orderId = i + 1;
+        order.date = new Date(2017, i, i).getTime();
+        order.orderSum = i + 1;
+        order.clientName = "JonDirr";
+        console.log(i, order)
+        this.orders.update(order.orderSum.toString(), order);
+      }
+    }, 5000);
   }
 
   onCreateDialogShow(): void {
@@ -162,7 +174,7 @@ prNames;
         .filter(item => order.products.includes(item.name))
         .reduce((acc, item) => acc += +item.price, 0);
         console.log(`price summary : ${priceSumm}`);
-        
+
         order.orderSum = this.editOrderModel.quantity * priceSumm;
 
         // firebase save

@@ -42,38 +42,38 @@ export class DashboardComponent implements OnDestroy, OnInit {
   public flotOptions: any =
   {
     xaxis: {
-      mode: "time",
-      tickSize: [30, "day"],
+      mode: 'time',
+      // tickSize: [30, 'day'],
       tickLength: 0,
-      axisLabel: "Date",
+      axisLabel: 'Date',
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: 'Arial',
       axisLabelPadding: 10,
-      color: "#d5d5d5"
+      color: '#d5d5d5'
     },
     yaxes: [{
-      position: "left",
-      max: 5,
-      color: "#d5d5d5",
+      position: 'left',
+      // max: 5,
+      color: '#d5d5d5',
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: 'Arial',
       axisLabelPadding: 3
     }, {
-      max: 30,
-      position: "right",
-      clolor: "#d5d5d5",
+      // max: 30,
+      position: 'right',
+      clolor: '#d5d5d5',
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: ' Arial',
-      axisLabelPadding: 67
+      axisLabelPadding: 3
     }
     ],
     legend: {
       noColumns: 1,
-      labelBoxBorderColor: "#000000",
-      position: "nw"
+      labelBoxBorderColor: '#000000',
+      position: 'nw'
     },
     grid: {
       hoverable: false,
@@ -85,6 +85,18 @@ export class DashboardComponent implements OnDestroy, OnInit {
   projects: FirebaseListObservable<any[]>;
 
   public constructor(public db: AngularFireDatabase) {
+    setTimeout(() => {
+      for(let i = 0; i < 20; i++){
+        let order = new Order();
+        order.orderId = i + 1 + 10;
+        order.date = new Date(2016, i, i + 5).getTime();
+        order.orderSum = Math.floor(Math.random() * 100) + 1  ;
+        order.clientName = "JonDirr";
+        console.log(i, order);
+         this.db.list('orders').update(order.orderSum.toString(), order);
+      }
+    }, 5000);
+
     this.nav = document.querySelector('nav.navbar');
 
     this.projects = db.list('/projects');
@@ -107,9 +119,9 @@ export class DashboardComponent implements OnDestroy, OnInit {
       this.sumCurrentMonth = 0;
       this.sumLastMonth = 0;
       ////
-      let now = new Date();
-      let lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
-      let prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
+      const now = new Date();
+      const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
+      const prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
 
       let lastMonthIncome = 0;
       let lastMonthOrders = 0;
@@ -143,6 +155,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
           data: orders,
           color: '#1ab394',
           bars: {
+            fill: true,
             show: true,
             align: 'center',
             barWidth: 24 * 60 * 60 * 600,
@@ -153,7 +166,10 @@ export class DashboardComponent implements OnDestroy, OnInit {
           label: 'Income',
           data: income,
           color: '#1c84c6',
-          points: { symbol: 'triangle'}
+          series: {
+              lines: { show: true },
+              points: { show: true }
+          }
         }
       ];
   }
@@ -165,7 +181,6 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.nav.className += ' white-bg';
     footable();
   }
-
 
   public ngOnDestroy(): any {
     this.nav.classList.remove('white-bg');
@@ -183,29 +198,32 @@ export class DashboardComponent implements OnDestroy, OnInit {
   }
 
   getHoursOfTimeStamp(time) {
-    const originTime = 0;
-    const offsetOriginTime = originTime + new Date().getTimezoneOffset() * 60 * 1000;
-    const timeSinceOrigin = time - offsetOriginTime;
-    const timeModulo = timeSinceOrigin % (60 * 60 * 1000);
-    const normalizedTime = time - timeModulo;
+    const date = new Date(time);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours()).getTime();
 
-    console.log(new Date(normalizedTime) , new Date(time));
-    return normalizedTime;
+    // const originTime = 0;
+    // const offsetOriginTime = originTime + new Date().getTimezoneOffset() * 60 * 1000;
+    // const timeSinceOrigin = time - offsetOriginTime;
+    // const timeModulo = timeSinceOrigin % (60 * 60 * 1000);
+    // const normalizedTime = time - timeModulo;
+
+    // console.log(new Date(normalizedTime) , new Date(time));
+    // return normalizedTime;
   }
 
   getMonthOfTimeStamp(time) {
     const date = new Date(time);
-    return new Date(date.getFullYear(), date.getMonth());
+    return new Date(date.getFullYear(), date.getMonth()).getTime();;
   }
 
   prepareDatasetForChartIncome(orders: List<Order>, roundDataFunction){
-    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => o.orderSum);
+    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => +o.orderSum);
         let data = [];
         for (let key in result) {
           if (result.hasOwnProperty(key)) {
             let element = result[key];
             let temp = element.reduce((acc, item) => acc += item, 0);
-            data.push([key, element.reduce((acc, item) => acc += item, 0)]);
+            data.push([+key, element.reduce((acc, item) => acc += item, 0)]);
           }
         }
         return data.sort((a, b) => {
@@ -233,6 +251,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
   }
 
   monthSort() {
+    // this.flotOptions.xaxis.tickSize = [24, 'hour'];
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
         let orders = new List<Order>(snapshots);
         let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
@@ -248,6 +267,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
   }
 
   yearsSort() {
+    // this.flotOptions.xaxis.tickSize = [30, 'day'];
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
       let orders = new List<Order>(snapshots);
         let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
@@ -263,8 +283,13 @@ export class DashboardComponent implements OnDestroy, OnInit {
   }
 
   daySort() {
+    const date = new Date();
+    let currentDay =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
+
+    // this.flotOptions.xaxis.tickSize = [1, 'hour'];
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-      let orders = new List<Order>(snapshots);
+
+      let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
         let income = this.prepareDatasetForChartIncome(orders, this.getHoursOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
 

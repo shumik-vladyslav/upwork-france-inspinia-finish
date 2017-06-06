@@ -41,10 +41,13 @@
                               <option *ngFor="let client of clients | async" value="{{client.name}}">{{client.name}}</option>
                               </select>
                               <!--validation name block-->
-                                <div *ngIf="name.errors"
+                                <div *ngIf="name.errors && (name.dirty || name.touched)"
                                     class="alert alert-danger">
                                     <div [hidden]="!name.errors.required">
-                                    Client name is required
+                                        Client name is required
+                                    </div>
+                                    <div [hidden]="!name.errors.pattern">
+                                        Name must contain leters and numbers only.
                                     </div>
                                 </div>
                                 <!--end validation namr block-->
@@ -124,7 +127,25 @@
                         <div class="col-sm-12">
                            <div class="form-group">
                               <label class="control-label">Quantity</label>
-                              <input [(ngModel)]="editOrderModel.quantity" name="quantity" type="text" class="form-control" placeholder="Quantity">
+                              <input required #quantity="ngModel" [(ngModel)]="editOrderModel.quantity" name="quantity" type="text" class="form-control" 
+                              equired minlength="1" maxlength="4" pattern="^[0-9]+$" placeholder="Quantity">
+                              <!--validation block-->
+                              <div *ngIf="quantity.errors && (quantity.dirty || quantity.touched)"
+                                    class="alert alert-danger">
+                                    <div [hidden]="!quantity.errors.required">
+                                    Quantity is required
+                                    </div>
+                                    <div [hidden]="!quantity.errors.minlength">
+                                    Quantity must be at least 1 characters long.
+                                    </div>
+                                    <div [hidden]="!quantity.errors.maxlength">
+                                    Quantity cannot be more than 4 characters long.
+                                    </div>
+                                    <div [hidden]="!quantity.errors.pattern">
+                                    Quantity  must be number
+                                    </div>
+                                </div>
+                                <!--end validation namr block-->
                            </div>
                         </div>
                         <div class="col-sm-12">

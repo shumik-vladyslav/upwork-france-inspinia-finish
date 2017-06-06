@@ -8,7 +8,7 @@ import { Cookie } from 'ng2-cookies';
 declare var jQuery: any;
 declare var $: any;
 
-class Order {
+export class Order {
   // firabase key
   $key;
 

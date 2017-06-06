@@ -3,7 +3,8 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { FlotChartDirective } from '../../components/charts/flotChart';
 import { Cookie } from 'ng2-cookies';
 import { footable } from '../../app.helpers';
-
+import { List } from 'linqts';
+import { Order } from '../orders/orders.component';
 declare var jQuery:any;
 declare var $: any;
 
@@ -53,13 +54,14 @@ export class DashboardComponent implements OnDestroy, OnInit {
     },
     yaxes: [{
       position: "left",
-      max: 100,
+      max: 30,
       color: "#d5d5d5",
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: 'Arial',
       axisLabelPadding: 3
     }, {
+      max: 30,
       position: "right",
       clolor: "#d5d5d5",
       axisLabelUseCanvas: true,
@@ -127,10 +129,10 @@ export class DashboardComponent implements OnDestroy, OnInit {
         }
       }
       this.orders = lastMonthOrders;
-      this.totalOrderPercent = (lastMonthOrders - prevMonthOrders) / prevMonthOrders * 100;
+      this.totalOrderPercent = Math.floor((lastMonthOrders - prevMonthOrders) / prevMonthOrders * 100);
 
       this.income = lastMonthIncome;
-      this.incomePercent = (lastMonthIncome - prevMonthIncome) / prevMonthIncome * 100;
+      this.incomePercent = Math.floor((lastMonthIncome - prevMonthIncome) / prevMonthIncome * 100);
     });
   }
 
@@ -169,200 +171,108 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.nav.classList.remove('white-bg');
   }
 
-  monthSort() {
-    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-        const ordersDataset: any[] = [];
-        const incomeDtataset: any[] = [];
-        // todo get current day data without hours and ...
-        let now = new Date();
-        let lastMonth = new Date (now.getFullYear(), now.getMonth());
+  getDateOfTimeStamp(time) {
+    const originTime = 0;
+    const offsetOriginTime = originTime + new Date().getTimezoneOffset() * 60 * 1000;
+    const timeSinceOrigin = time - offsetOriginTime;
+    const timeModulo = timeSinceOrigin % (24 * 60 * 60 * 1000);
+    const normalizedTime = time - timeModulo;
 
-        let maxOrdCount = 0;
-        let maxIncome = 0;
-        let prevDate = -1;
-        let orderAcc = 0;
-        let incomeAcc = 0;
+    console.log(new Date(normalizedTime) , new Date(time));
+    return normalizedTime;
+  }
 
-        for (var index = 0; index < snapshots.length; index++) {
-          var snapshot = snapshots[index];
-          let orderDate = new Date(snapshot.date);
-          if (orderDate < lastMonth) {
-            const date: number = orderDate.getDate();
-            incomeDtataset.push([date, incomeAcc]);
-            ordersDataset.push([date, orderAcc]);
-            if ( orderAcc > maxOrdCount) {
-              maxOrdCount = ordersDataset[date];
-            }
-            if ( incomeAcc > maxIncome) {
-              maxIncome = incomeAcc;
-            }
-            incomeAcc = 0;
-            orderAcc = 0;
-            prevDate = date;
-            continue;
-          }
+  getHoursOfTimeStamp(time) {
+    const originTime = 0;
+    const offsetOriginTime = originTime + new Date().getTimezoneOffset() * 60 * 1000;
+    const timeSinceOrigin = time - offsetOriginTime;
+    const timeModulo = timeSinceOrigin % (60 * 60 * 1000);
+    const normalizedTime = time - timeModulo;
 
-          const date: number = orderDate.getDate();
-          if (prevDate === -1) {
-            prevDate = date;
-          }
+    console.log(new Date(normalizedTime) , new Date(time));
+    return normalizedTime;
+  }
 
-          if (prevDate == date) {
-            orderAcc += 1;
-            incomeAcc += snapshot.orderSum;
-          } else {
-            incomeDtataset.push([date, incomeAcc]);
-            ordersDataset.push([date, orderAcc]);
-            if ( orderAcc > maxOrdCount) {
-              maxOrdCount = orderAcc;
-            }
-            if ( incomeAcc > maxIncome) {
-              maxIncome = incomeAcc;
-            }
-            incomeAcc = 0;
-            orderAcc = 0;
-            prevDate = date;
+  getMonthOfTimeStamp(time) {
+    const date = new Date(time);
+    return new Date(date.getFullYear(), date.getMonth());
+  }
+
+  prepareDatasetForChartIncome(orders: List<Order>, roundDataFunction){
+    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => o.orderSum);
+        let data = [];
+        for (let key in result) {
+          if (result.hasOwnProperty(key)) {
+            let element = result[key];
+            let temp = element.reduce((acc, item) => acc += item, 0);
+            data.push([key, element.reduce((acc, item) => acc += item, 0)]);
           }
         }
-        console.log(ordersDataset);
-        console.log(maxOrdCount);
+        return data.sort((a, b) => {
+          if (a[0] < b[0]) {return -1; }
+          if (a[0] > b[0]) {return 1; }
+          return 0;
+        });
+  }
 
-        this.flotOptions.yaxes[0].max = maxOrdCount;
-        this.flotOptions.yaxes[1].max = maxIncome;
+  prepareDatasetForChartOrders(orders: List<Order>, roundDataFunction){
+    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => 1);
+        let data = [];
+        for (let key in result) {
+          if (result.hasOwnProperty(key)) {
+            let element = result[key];
+            let temp = element.reduce((acc, item) => acc += item, 0);
+            data.push([key, element.reduce((acc, item) => acc += item, 0)]);
+          }
+        }
+        return data.sort((a, b) => {
+          if (a[0] < b[0]) {return -1; }
+          if (a[0] > b[0]) {return 1; }
+          return 0;
+        });
+  }
+
+  monthSort() {
+    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
+        let orders = new List<Order>(snapshots);
+        let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
+        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getDateOfTimeStamp);
+
+        // this.flotOptions.yaxes[0].max = 70;
+        // this.flotOptions.yaxes[1].max = 100;
+
         setTimeout(() => {
-          this.updateChartDatasets(ordersDataset, incomeDtataset);
+          this.updateChartDatasets(letOrdersData, income);
         }, 2000);
       });
   }
 
   yearsSort() {
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-        const ordersDataset: any[] = [];
-        const incomeDtataset: any[] = [];
-        // todo get current day data without hours and ...
-        let now = new Date();
-        let lastYear = new Date (now.getFullYear());
+      let orders = new List<Order>(snapshots);
+        let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
+        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
 
-        let maxOrdCount = 0;
-        let maxIncome = 0;
-        let prevMonth = -1;
-        let orderAcc = 0;
-        let incomeAcc = 0;
+        // this.flotOptions.yaxes[0].max = 70;
+        // this.flotOptions.yaxes[1].max = 100;
 
-        for (var index = 0; index < snapshots.length; index++) {
-          var snapshot = snapshots[index];
-          let orderDate = new Date(snapshot.date);
-          if (orderDate < lastYear) {
-            const month: number = orderDate.getMonth();
-            incomeDtataset.push([month, incomeAcc]);
-            ordersDataset.push([month, orderAcc]);
-            if ( orderAcc > maxOrdCount) {
-              maxOrdCount = ordersDataset[month];
-            }
-            if ( incomeAcc > maxIncome) {
-              maxIncome = incomeAcc;
-            }
-            incomeAcc = 0;
-            orderAcc = 0;
-            prevMonth = month;
-            continue;
-          }
-
-          const month: number = orderDate.getMonth();
-          if (prevMonth === -1) {
-            prevMonth = month;
-          }
-
-          if (prevMonth == month) {
-            orderAcc += 1;
-            incomeAcc += snapshot.orderSum;
-          } else {
-            incomeDtataset.push([month, incomeAcc]);
-            ordersDataset.push([month, orderAcc]);
-            if ( orderAcc > maxOrdCount) {
-              maxOrdCount = orderAcc;
-            }
-            if ( incomeAcc > maxIncome) {
-              maxIncome = incomeAcc;
-            }
-            incomeAcc = 0;
-            orderAcc = 0;
-            prevMonth = month;
-          }
-        }
-        console.log(ordersDataset);
-        console.log(maxOrdCount);
-
-        this.flotOptions.yaxes[0].max = maxOrdCount;
-        this.flotOptions.yaxes[1].max = maxIncome;
         setTimeout(() => {
-          this.updateChartDatasets(ordersDataset, incomeDtataset);
+          this.updateChartDatasets(letOrdersData, income);
         }, 2000);
-      });
+    });
   }
 
   daySort() {
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-        const ordersDataset: any[] = [];
-        const incomeDtataset: any[] = [];
-        // todo get current day data without hours and ...
-        let now = new Date();
-        let lastDay = new Date (now.getFullYear(), now.getMonth(), now.getDate());
+      let orders = new List<Order>(snapshots);
+        let income = this.prepareDatasetForChartIncome(orders, this.getHoursOfTimeStamp);
+        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
 
-        let maxOrdCount = 0;
-        let maxIncome = 0;
-        let prevHours = -1;
-        let orderAcc = 0;
-        let incomeAcc = 0;
+        // this.flotOptions.yaxes[0].max = 70;
+        // this.flotOptions.yaxes[1].max = 100;
 
-        for (var index = 0; index < snapshots.length; index++) {
-          var snapshot = snapshots[index];
-          let orderDate = new Date(snapshot.date);
-          if (orderDate < lastDay) {
-            const hours: number = orderDate.getHours();
-            incomeDtataset.push([hours, incomeAcc]);
-            ordersDataset.push([hours, orderAcc]);
-            if ( orderAcc > maxOrdCount) {
-              maxOrdCount = ordersDataset[hours];
-            }
-            if ( incomeAcc > maxIncome) {
-              maxIncome = incomeAcc;
-            }
-            incomeAcc = 0;
-            orderAcc = 0;
-            prevHours = hours;
-            continue;
-          }
-
-          const hours: number = orderDate.getHours();
-          if (prevHours === -1) {
-            prevHours = hours;
-          }
-
-          if (prevHours == hours) {
-            orderAcc += 1;
-            incomeAcc += snapshot.orderSum;
-          } else {
-            incomeDtataset.push([hours, incomeAcc]);
-            ordersDataset.push([hours, orderAcc]);
-            if ( orderAcc > maxOrdCount) {
-              maxOrdCount = orderAcc;
-            }
-            if ( incomeAcc > maxIncome) {
-              maxIncome = incomeAcc;
-            }
-            incomeAcc = 0;
-            orderAcc = 0;
-            prevHours = hours;
-          }
-        }
-        console.log(ordersDataset);
-        console.log(maxOrdCount);
-
-        this.flotOptions.yaxes[0].max = maxOrdCount;
-        this.flotOptions.yaxes[1].max = maxIncome;
         setTimeout(() => {
-          this.updateChartDatasets(ordersDataset, incomeDtataset);
+          this.updateChartDatasets(letOrdersData, income);
         }, 2000);
       });
   }

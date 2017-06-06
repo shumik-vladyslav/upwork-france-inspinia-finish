@@ -137,7 +137,7 @@ export class ClientsComponent {
     console.log("Выбрать клиента");
   }
 
-  onEditSubmit() {
+  onUpdate(form: NgForm) {
     console.log("onEditSubmit");
     let statusClass;
     if(this.status2 == 'Enabled') {
@@ -156,13 +156,10 @@ export class ClientsComponent {
       statusClass: statusClass,
     }
 
-    //this.model.data = this.data;
-    //console.log(this.model.data,44);
-    console.log(markupStrIn,44);
+    //close modal
     $('#edit-form').modal('toggle');
+    form.resetForm();
+
     this.clients.update(this.id, client);
-    this.router.navigate(['/clients']);
-
   }
-
 }

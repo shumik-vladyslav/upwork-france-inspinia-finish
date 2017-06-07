@@ -39,52 +39,79 @@ export class DashboardComponent implements OnDestroy, OnInit {
   // data for chart
   flotDataset: any;
 
-  public flotOptions: any =
-  {
+  flotOptionsTemplate = {
     xaxis: {
-      mode: "time",
-      tickSize: [30, "day"],
-      tickLength: 0,
-      axisLabel: "Date",
+      mode: 'time',
+      tickSize: [30, 'day'],
+      // tickLength: 0,
+      axisLabel: 'Date',
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: 'Arial',
       axisLabelPadding: 10,
-      color: "#d5d5d5"
+      color: '#d5d5d5'
     },
     yaxes: [{
-      position: "left",
-      max: 30,
-      color: "#d5d5d5",
+      position: 'left',
+      // max: 5,
+      color: '#d5d5d5',
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: 'Arial',
       axisLabelPadding: 3
     }, {
-      max: 30,
-      position: "right",
-      clolor: "#d5d5d5",
+      // max: 30,
+      position: 'right',
+      clolor: '#d5d5d5',
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: 12,
       axisLabelFontFamily: ' Arial',
-      axisLabelPadding: 67
+      axisLabelPadding: 3
     }
     ],
     legend: {
       noColumns: 1,
-      labelBoxBorderColor: "#000000",
-      position: "nw"
+      labelBoxBorderColor: '#000000',
+      position: 'nw'
     },
     grid: {
       hoverable: false,
       borderWidth: 0
     }
   };
+  public flotOptions: any = this.flotOptionsTemplate;
+  
 
 
   projects: FirebaseListObservable<any[]>;
 
   public constructor(public db: AngularFireDatabase) {
+    let timearray = [1483351240000,1486324840000,1488776440000,1491444040000,1496307640000,1496408440000,1496509240000,
+    1496797240000,1496804440000,1496811640000,1496847640000,1496847640000,];
+    let orderSumArray = [600,100,200,800,50,10,700,200,300,25,450,100,];
+
+
+    // setTimeout(() => {
+    //   for (let index = 0; index < timearray.length; index++) {
+    //         const date = timearray[index];
+    //         const sum = orderSumArray[index];
+    //         let order = new Order();
+    //         order.orderId = index;
+    //         order.date = date;
+    //         order.orderSum = sum;
+    //         order.clientName = "JonDirr";
+    //         order.status = 'pending';
+    //         order.paid = 'paid';
+    //         order.products = ['Swodoo','Shield'];
+    //         order.quantity = 1;
+    //         order.priceMethod = '';
+    //         order.notes = '';
+    //         order.ticketNumber = '';
+    //         this.db.list('orders').update(index.toPrecision(), order);
+    //       }
+    //   }
+    // , 3000);
+
     this.nav = document.querySelector('nav.navbar');
 
     this.projects = db.list('/projects');
@@ -96,6 +123,8 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
     // income chart
     this.daySort();
+    // this.monthSort();
+    // this.yearsSort();
 
     this.ordersTable = db.list('/orders').subscribe(snapshots => {
       this.income = 0;
@@ -107,9 +136,9 @@ export class DashboardComponent implements OnDestroy, OnInit {
       this.sumCurrentMonth = 0;
       this.sumLastMonth = 0;
       ////
-      let now = new Date();
-      let lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
-      let prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
+      const now = new Date();
+      const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
+      const prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
 
       let lastMonthIncome = 0;
       let lastMonthOrders = 0;
@@ -136,6 +165,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     });
   }
 
+barWidth;
  updateChartDatasets (orders, income = []) {
     this.flotDataset = [
         {
@@ -143,17 +173,22 @@ export class DashboardComponent implements OnDestroy, OnInit {
           data: orders,
           color: '#1ab394',
           bars: {
+            fill: true,
             show: true,
             align: 'center',
-            barWidth: 24 * 60 * 60 * 600,
-            lineWidth: 0
+            barWidth: this.barWidth,
+            // lineWidth: 2
           }
         },
         {
           label: 'Income',
           data: income,
           color: '#1c84c6',
-          points: { symbol: 'triangle'}
+          series: {
+              lines: { show: true },
+              points: { show: true }
+          }
+          , yaxis: 2
         }
       ];
   }
@@ -166,46 +201,33 @@ export class DashboardComponent implements OnDestroy, OnInit {
     footable();
   }
 
-
   public ngOnDestroy(): any {
     this.nav.classList.remove('white-bg');
   }
 
   getDateOfTimeStamp(time) {
-    const originTime = 0;
-    const offsetOriginTime = originTime + new Date().getTimezoneOffset() * 60 * 1000;
-    const timeSinceOrigin = time - offsetOriginTime;
-    const timeModulo = timeSinceOrigin % (24 * 60 * 60 * 1000);
-    const normalizedTime = time - timeModulo;
-
-    console.log(new Date(normalizedTime) , new Date(time));
-    return normalizedTime;
+    const date = new Date(time);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
   }
 
   getHoursOfTimeStamp(time) {
-    const originTime = 0;
-    const offsetOriginTime = originTime + new Date().getTimezoneOffset() * 60 * 1000;
-    const timeSinceOrigin = time - offsetOriginTime;
-    const timeModulo = timeSinceOrigin % (60 * 60 * 1000);
-    const normalizedTime = time - timeModulo;
-
-    console.log(new Date(normalizedTime) , new Date(time));
-    return normalizedTime;
+    const date = new Date(time);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours()).getTime();
   }
 
   getMonthOfTimeStamp(time) {
     const date = new Date(time);
-    return new Date(date.getFullYear(), date.getMonth());
+    return new Date(date.getFullYear(), date.getMonth()).getTime();
   }
 
   prepareDatasetForChartIncome(orders: List<Order>, roundDataFunction){
-    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => o.orderSum);
+    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => +o.orderSum);
         let data = [];
         for (let key in result) {
           if (result.hasOwnProperty(key)) {
             let element = result[key];
             let temp = element.reduce((acc, item) => acc += item, 0);
-            data.push([key, element.reduce((acc, item) => acc += item, 0)]);
+            data.push([+key, element.reduce((acc, item) => acc += item, 0)]);
           }
         }
         return data.sort((a, b) => {
@@ -232,9 +254,38 @@ export class DashboardComponent implements OnDestroy, OnInit {
         });
   }
 
-  monthSort() {
+  yearsSort() {
+    this.barWidth= 15 * 24 * 60 * 60 * 1000;
+     this.flotOptionsTemplate.xaxis.tickSize = [1, "month"];
+    this.flotOptions= this.flotOptionsTemplate;
+
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-        let orders = new List<Order>(snapshots);
+      let orders = new List<Order>(snapshots);
+        let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
+        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
+
+        // this.flotOptions.yaxes[0].max = 70;
+        // this.flotOptions.yaxes[1].max = 100;
+
+        setTimeout(() => {
+          this.updateChartDatasets(letOrdersData, income);
+         
+        }, 2000);
+    });
+  }
+
+  monthSort() {
+    this.barWidth= 12 * 60 * 60 * 1000;
+    const date = new Date();
+    let currentMonth =  new Date(date.getFullYear(), date.getMonth());
+    console.log(currentMonth);
+
+    this.flotOptionsTemplate.xaxis.tickSize = [1, "day"];
+    this.flotOptions= this.flotOptionsTemplate;
+
+    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
+    let orders = new List<Order>(snapshots.filter(s => s.date > currentMonth));
+        // let orders = new List<Order>(snapshots);
         let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getDateOfTimeStamp);
 
@@ -247,27 +298,34 @@ export class DashboardComponent implements OnDestroy, OnInit {
       });
   }
 
-  yearsSort() {
-    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-      let orders = new List<Order>(snapshots);
-        let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
-        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
-
-        // this.flotOptions.yaxes[0].max = 70;
-        // this.flotOptions.yaxes[1].max = 100;
-
-        setTimeout(() => {
-          this.updateChartDatasets(letOrdersData, income);
-        }, 2000);
-    });
-  }
-
   daySort() {
-    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
-      let orders = new List<Order>(snapshots);
-        let income = this.prepareDatasetForChartIncome(orders, this.getHoursOfTimeStamp);
-        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
+    this.barWidth= 30 * 60 * 1000;
+    const date = new Date();
+    let currentDay =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
+    console.log(currentDay);
 
+    this.flotOptions.xaxis.tickSize = [3, 'hour'];
+    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
+    let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
+        
+        // let income = snapshots.map(s => [s.date, s.orderSum]);
+        // income =  income.sort((a, b) => {
+        //   if (a[0] < b[0]) {return -1; }
+        //   if (a[0] > b[0]) {return 1; }
+        //   return 0;
+        // });
+        // console.log(income);
+        
+        // let letOrdersData = snapshots.map(s => [s.date, 1]);
+        // letOrdersData =  letOrdersData.sort((a, b) => {
+        //   if (a[0] < b[0]) {return -1; }
+        //   if (a[0] > b[0]) {return 1; }
+        //   return 0;
+        // });
+        let income = this.prepareDatasetForChartIncome(orders,this.getHoursOfTimeStamp);
+        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
+        console.log(income);
+        console.log(letOrdersData);
         // this.flotOptions.yaxes[0].max = 70;
         // this.flotOptions.yaxes[1].max = 100;
 

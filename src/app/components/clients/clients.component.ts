@@ -7,26 +7,38 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import {Subject} from 'rxjs/Subject';
 import {Router} from '@angular/router';
 
-declare var jQuery:any;
+declare var jQuery: any;
 declare var $: any;
+
+export class Client {
+  $key;
+  name;
+  phone;
+  email;
+  status;
+  address;
+  statusClass;
+
+  console () {
+    this.name = '';
+    this.phone = '';
+    this.email = '';
+    this.status = 'Enabled';
+    this.address = '';
+    this.statusClass = true;
+  }
+}
 
 @Component({
   selector: 'clients',
   templateUrl: 'clients.template.html'
 })
+
 export class ClientsComponent {
 
-  name;
-  phone;
-  email;
-  status;
+  crClientModel = new Client();
+  edClientModel = new Client();
 
-  id;
-  name2;
-  phone2;
-  email2;
-  status2;
-  address;
   orderHistory;
 
   statusClass;
@@ -38,22 +50,21 @@ export class ClientsComponent {
 
   client;
 
-  newClient:any = {status: 'Enabled'};
+  newClient: any = {status: 'Enabled'};
   searchClient;
+
+  selectedClient: any = {};
+  selectedRowIdx = -1;
 
   constructor(public db: AngularFireDatabase, private router: Router) {
     this.clients = db.list('/clients');
-    this.clientsOrders = db.list('/orders', {
-        query: {
-            // orderByChild: 'date',
-            //equalTo: this.filterOrdersSubject,
-        }
-      });
-      this.clientsOrders.subscribe(queriedItems => {
-        console.log('clientsOrders');
-        console.log(queriedItems);
-        this.clientsOrdersValue = queriedItems;
-      });
+    this.clientsOrders = db.list('/orders');
+
+    this.clientsOrders.subscribe(queriedItems => {
+      console.log('clientsOrders');
+      console.log(queriedItems);
+      this.clientsOrdersValue = queriedItems;
+    });
   }
 
   onOrdersHistory(clientName: string) {
@@ -61,16 +72,13 @@ export class ClientsComponent {
     this.filterOrdersSubject.next(clientName);
   }
 
-  public ngOnInit():any {
+  ngOnInit (): any {
     footable();
     summernote();
     slimscroll();
-
   }
 
-  selectedClient: any = {};
-  selectedRowIdx = -1;
-  onRowClick(i,client){
+  onRowClick(i, client) {
     console.log(`index =${i}`);
     console.log(JSON.stringify(client));
     this.selectedClient = client;
@@ -78,88 +86,54 @@ export class ClientsComponent {
     this.filteredOrders = this.clientsOrdersValue.filter(order => order.clientName == client.name);
   }
 
-  onAddSubmit(form: NgForm) {
-    console.log("onAddSubmit");
-    let statusClass;
-    if (this.newClient.status == 'Enabled') {
-      statusClass = true;
-    } else {
-      statusClass = false;
-    }
-    let client = {
-      name: this.newClient.name,
-      phone: this.newClient.phone? this.newClient.phone: '',
-      email: this.newClient.email? this.newClient.email: '',
-      status: this.newClient.status,
-      address: '',
-      orderHistory: '',
-      statusClass: statusClass
+  onCreate(form: NgForm) {
+    console.log('onCreate');
+    const client = this.crClientModel;
+
+    // prepare order object for saving
+    client.statusClass = true;
+    if ( client.status === 'Disabled') {
+      client.statusClass = false;
     }
 
-    $('#create-form').modal('toggle');
+    // send to firebase
     this.clients.push(client);
+
+    // close modal
+    $('#create-form').modal('toggle');
+
+    // reset form
     form.resetForm();
-    // form.controls.status.setValue('Enabled');
-    this.newClient = {status: 'Enabled'};
+    this.crClientModel = new Client();
   }
 
-  getClient(keyClient) {
-    let key = keyClient;
+  onGet(keyClient) {
+    this.db.object(`/clients/${keyClient}`).subscribe(snapshot => {
+          this.edClientModel = snapshot;
 
-    this.db.list('/clients').subscribe(snapshots => {
-
-      snapshots.forEach(snapshot => {
-        let currentKey = snapshot.$key;
-        console.log(currentKey, 554);
-
-        if (key == currentKey) {
-          this.id = snapshot.$key;
-          this.name2 = snapshot.name;
-          this.phone2 = snapshot.phone;
-          this.email2 = snapshot.email;
-          this.status2 = snapshot.status;
-          this.address = snapshot.address;
-          this.orderHistory = snapshot.orderHistory;
-          //console.log(this.data);
-          var markupStr = '' + this.orderHistory;
-          $('.summernote').summernote('code', markupStr);
-          console.log(`onOrdersHistory client:${snapshot.name}`);
-          this.filterOrdersSubject.next(snapshot.name);
-          //filter clients orders
+          // filter clients orders
           this.filteredOrders = this.clientsOrdersValue.filter(order => order.clientName == snapshot.name);
-          console.log(`filteredOrders ${this.filteredOrders}`);
-          //
-        }
-      });
     });
-
-    console.log(key);
-    console.log("Выбрать клиента");
   }
 
   onUpdate(form: NgForm) {
-    console.log("onEditSubmit");
-    let statusClass;
-    if(this.status2 == 'Enabled') {
-      statusClass = true;
-    } else {
-      statusClass = false;
-    }
-    var markupStrIn = $('.summernote').summernote('code');
-    let client = {
-      name: this.name2,
-      phone: this.phone2,
-      email: this.email2,
-      status: this.status2,
-      address: this.address,
-      orderHistory: markupStrIn,
-      statusClass: statusClass,
+    console.log('onUpdate');
+    const client = this.edClientModel;
+
+    // prepare order object for saving
+    client.statusClass = true;
+    if ( client.status === 'Disabled') {
+      client.statusClass = false;
     }
 
-    //close modal
+    // send to firebase
+    this.clients.update(client.$key, client);
+
+    // close modal
     $('#edit-form').modal('toggle');
-    form.resetForm();
 
-    this.clients.update(this.id, client);
+    // reset form
+    form.resetForm();
+    this.edClientModel = new Client();
   }
 }

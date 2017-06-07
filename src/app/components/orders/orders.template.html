@@ -56,16 +56,17 @@
                         <div class="col-sm-12">
                            <div class="form-group">
                               <label  class="control-label" for="products">Product</label>
-                              <select multiple id="products" name="products" class="form-control" placeholder="Product" >
+                              <select required multiple id="products" name="products" class="form-control" placeholder="Product" 
+                               #products >
                                  <option *ngFor="let product of productsNames" value="{{product.name}}">{{product.name}}</option>
                               </select>
                               <!--validation name block-->
-                                <!--<div *ngIf="products.errors"
+                                <div *ngIf="products.errors && (products.dirty || products.touched)"
                                     class="alert alert-danger">
                                     <div [hidden]="!products.errors.required">
                                     Products list canot be empty.
                                     </div>
-                                </div>-->
+                                </div>
                                 <!--end validation namr block-->
                            </div>
                         </div>
@@ -81,7 +82,7 @@
                         <div class="col-sm-12">
                            <div class="form-group">
                               <label class="control-label" for="status">Status</label>
-                              <select [(ngModel)]="createOrderModel.status" name="status" id="status" class="form-control" placeholder="Status">
+                              <select [(ngModel)]="createOrderModel.status" name="status" id="status" class="form-control" placeholder="Status" value="Pending">
                               <option value="pending" selected>Pending</option>
                               <option value="done">Done</option>
                               </select>
@@ -89,7 +90,10 @@
                         </div>
                         <div class="col-sm-12">
                            <div class="form-group">
-                              <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="createOrderForm.invalid">Create order</button>
+                              <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts">Create order</button>
+                           </div>
+                           <div *ngIf="invalidProducts" class="alert alert-danger">
+                               opopo
                            </div>
                         </div>
                      </div>

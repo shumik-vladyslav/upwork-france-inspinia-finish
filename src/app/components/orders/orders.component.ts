@@ -28,11 +28,12 @@ export class Order {
   constructor() {
       this.quantity = 0;
       this.paid = 'unpaid';
-      this.status = 'pending';
+      this.status = 'Pending';
       this.statusClass = false;
       this.notes = '';
       this.ticketNumber = '';
       this.orderSum = 0;
+      this.priceMethod = '';
   };
 }
 
@@ -45,6 +46,8 @@ export class OrdersComponent implements OnInit {
   createOrderModel: Order = new Order();
   editOrderModel: Order = new Order();
 
+  createOrderForm;
+  invalidProducts;
   totalOrders;
   searchOrder;
 
@@ -74,6 +77,7 @@ prNames;
   }
 
   public ngOnInit(): void {
+    this.invalidProducts = true;
     this.firebaseUserKey =  JSON.parse(Cookie.getAll()['User']).firebaseKey;
     this.db.object(`users/${this.firebaseUserKey}`).subscribe(
         user => {
@@ -90,6 +94,11 @@ prNames;
     footable();
   }
 
+  // onChangeProducts() {
+  //   console.log("onChangeProducts");
+    
+  // }
+
   onCreateDialogShow(): void {
       this.productsFrbsCollection.subscribe(snapshots => {
         this.productsNames = snapshots;
@@ -102,6 +111,17 @@ prNames;
             $('#products').on('change', function(e) {
               // triggers when whole value changed
               console.log($('#products').val());
+              console.log(this.products);
+              const val = $('#products').val();
+              if (!val || val.length == 0 ) {
+                console.log('op');
+
+                this.invalidProducts = true;
+              } else {
+                console.log('tr');
+
+                this.invalidProducts = false;
+              }
             });
           }
         , 200);
@@ -110,14 +130,15 @@ prNames;
   }
 
   onCreate(form: NgForm) {
+    // this.invalidProducts = true;
     const order = this.createOrderModel;
     // prepare order object for saving
     order.statusClass = true;
     if ( order.status == 'pending') {
-      order.statusClass = false;
+      order.statusClass = true;
     }
     order.date = Date.now();
-    order.orderSum = 500;
+    order.orderSum = 0;
     order.orderId = this.totalOrders;
     order.products = $('#products').val();
 
@@ -129,6 +150,7 @@ prNames;
 
     // reset form
     form.resetForm();
+    $('#payMeth').val([]);
     this.createOrderModel = new Order();
   }
 
@@ -137,7 +159,7 @@ prNames;
       this.editOrderModel = snapshots;
       setTimeout(() => {
           $('#payMeth').val(snapshots.priceMethod);
-          $('#payMeth').trigger('chosen:updated');
+          // $('#payMeth').trigger('chosen:updated');
           $('#payMeth').chosen();
           $('#payMeth').on('change', (e) => {
             console.log($('#payMeth').val());
@@ -155,6 +177,7 @@ prNames;
       order.statusClass = false;
     }
     console.log(order.products);
+    order.priceMethod = $('#payMeth').val();
     this.db.list('products').subscribe(
       products => {
         // get summary price
@@ -173,6 +196,7 @@ prNames;
 
         // reset form
         form.resetForm();
+        $('#payMeth').val([]);
         this.editOrderModel = new Order();
       }
     );

@@ -55,6 +55,9 @@
                             <div [hidden]="!pname.errors.maxlength">
                               Name cannot be more than 24 characters long.
                             </div>
+                            <div [hidden]="!pname.errors.pattern">
+                                Name must contain leters and numbers only.
+                            </div>
                         </div>
                         <!--end validation namr block-->
 

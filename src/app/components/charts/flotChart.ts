@@ -57,8 +57,12 @@ export class FlotChartDirective implements OnDestroy, OnChanges, OnInit {
     if (this.initFlag) {
       // Check if the changes are in the datasets
       if (changes.hasOwnProperty('dataset')) {
-        this.updateChartData(changes['dataset'].currentValue);
-      } else {
+        this.updateChartDataAndGrid(changes['dataset'].currentValue,null);
+        this.dataset = changes['dataset'].currentValue;
+      } else if (changes.hasOwnProperty('options')) {
+        console.log('options changes');
+        this.options = changes['options'].currentValue;
+        this.updateChartDataAndGrid(null,null);
         // Otherwise rebuild the chart
         this.build();
       }
@@ -66,10 +70,19 @@ export class FlotChartDirective implements OnDestroy, OnChanges, OnInit {
   }
 
   // Update
-  private updateChartData(newDataValues:any[]):void {
-    this.chart.setData(newDataValues);
-    this.chart.setupGrid();
-    this.chart.draw();
+  private updateChartDataAndGrid(newDataValues: any[], gridSetting: any): void {
+    if (this.chart) {
+      this.chart.shutdown();
+      this.chart = jQuery.plot(this.element.nativeElement, this.dataset, this.options);
+    }
+    
+    // console.log(JSON.stringify(this.options));
+    
+    // this.chart.setData(this.dataset);
+    // this.chart.setupGrid(this.options);
+    // // console.log(this.options.);
+    
+    // this.chart.draw();
   }
 
   // Destroy

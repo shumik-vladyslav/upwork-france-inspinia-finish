@@ -44,8 +44,7 @@
                               #pname="ngModel" >
                          <!--end input name block-->
                         <!--validation name block-->
-                        <div *ngIf="pname.errors"
-                            class="alert alert-danger">
+                        <div *ngIf="pname.errors && (pname.dirty || pname.touched)" class="alert alert-danger">
                             <div [hidden]="!pname.errors.required">
                               Name is required
                             </div>
@@ -138,6 +137,9 @@
                             </div>
                             <div [hidden]="!name.errors.maxlength">
                               Name cannot be more than 24 characters long.
+                            </div>
+                            <div [hidden]="!name.errors.pattern">
+                                Name must contain leters and numbers only.
                             </div>
                         </div>
                       </div>

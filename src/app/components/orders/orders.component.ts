@@ -77,6 +77,9 @@ prNames;
   }
 
   public ngOnInit(): void {
+    setTimeout(() => {
+       this.invalidProducts = true;
+    }, 5000);
     this.invalidProducts = true;
     this.firebaseUserKey =  JSON.parse(Cookie.getAll()['User']).firebaseKey;
     this.db.object(`users/${this.firebaseUserKey}`).subscribe(
@@ -130,7 +133,7 @@ prNames;
   }
 
   onCreate(form: NgForm) {
-    // this.invalidProducts = true;
+    // this. = true;
     const order = this.createOrderModel;
     // prepare order object for saving
     order.statusClass = true;

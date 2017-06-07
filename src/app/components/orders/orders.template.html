@@ -90,11 +90,11 @@
                         </div>
                         <div class="col-sm-12">
                            <div class="form-group">
-                              <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts">Create order</button>
+                              <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts || ngForm.invalid">Create order</button>
                            </div>
-                           <div *ngIf="invalidProducts" class="alert alert-danger">
+                           <!--<div *ngIf="invalidProducts" class="alert alert-danger">
                                opopo
-                           </div>
+                           </div>-->
                         </div>
                      </div>
                   </form>
@@ -197,7 +197,7 @@
                            </div>-->
                         <div class="col-sm-12">
                            <div class="form-group">
-                              <button type="button" (click)="onUpdate(updateOrderForm)" class="btn btn-success" >Save</button>    
+                              <button type="button" (click)="onUpdate(updateOrderForm)" class="btn btn-success" [disabled]="updateOrderForm.invalid">Save</button>    
                            </div>
                         </div>
                      </fieldset>

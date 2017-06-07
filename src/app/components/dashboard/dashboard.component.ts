@@ -87,7 +87,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
   public constructor(public db: AngularFireDatabase) {
     let timearray = [1483351240000,1486324840000,1488776440000,1491444040000,1496307640000,1496408440000,1496509240000,
-    1496797240000,1496804440000,1496811640000,1496847640000,1496847640000,];
+    1496797240000,1496804440000,1496811640000];
     let orderSumArray = [600,100,200,800,50,10,700,200,300,25,450,100,];
 
 
@@ -239,6 +239,8 @@ barWidth;
 
   prepareDatasetForChartOrders(orders: List<Order>, roundDataFunction){
     let result = orders.GroupBy(order => roundDataFunction(order.date),  o => 1);
+    console.log(result);
+    
         let data = [];
         for (let key in result) {
           if (result.hasOwnProperty(key)) {
@@ -280,7 +282,7 @@ barWidth;
     let currentMonth =  new Date(date.getFullYear(), date.getMonth());
     console.log(currentMonth);
 
-    this.flotOptionsTemplate.xaxis.tickSize = [1, "day"];
+    this.flotOptionsTemplate.xaxis.tickSize = [1, 'day'];
     this.flotOptions= this.flotOptionsTemplate;
 
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
@@ -304,7 +306,8 @@ barWidth;
     let currentDay =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
     console.log(currentDay);
 
-    this.flotOptions.xaxis.tickSize = [3, 'hour'];
+    this.flotOptionsTemplate.xaxis.tickSize = [3, 'hour'];
+    this.flotOptions= this.flotOptionsTemplate;
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
     let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
         

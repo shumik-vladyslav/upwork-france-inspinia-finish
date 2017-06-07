@@ -26,12 +26,17 @@ export class Order {
   statusClass;
 
   constructor() {
-      this.quantity = 0;
+      this.orderId = 0;
+      this.clientName = '';
+      this.status = 'pending';
       this.paid = 'unpaid';
-      this.status = 'Pending';
+      this.quantity = 0;
+      this.priceMethod = [];
+      this.notes = '';
       this.statusClass = false;
       this.notes = '';
       this.ticketNumber = '';
+      this.date = '';
       this.orderSum = 0;
       this.priceMethod = '';
   };
@@ -95,9 +100,9 @@ prNames;
         error => console.log(`error: ${error.message}`)
       );
     footable();
-    setInterval(() => {
-      this.invalidProducts = !this.invalidProducts;
-    }, 1000)
+    // setInterval(() => {
+    //   this.invalidProducts = !this.invalidProducts;
+    // }, 1000)
 
     // setTimeout(() => {
     //   for(let i = 0; i < 12; i++){
@@ -120,6 +125,7 @@ prNames;
   onCreateDialogShow(): void {
       this.productsFrbsCollection.subscribe(snapshots => {
         this.productsNames = snapshots;
+        let self = this;
         setTimeout(() => {
             // $('#products').val(['while', 'erere']);
             console.log($('#products').val());
@@ -133,12 +139,12 @@ prNames;
               const val = $('#products').val();
               if (!val || val.length == 0 ) {
                 console.log('op');
-
-                this.invalidProducts = true;
+                self.invalidProducts = true;
+                // this.invalidProducts = !this.invalidProducts;
               } else {
                 console.log('tr');
-
-                this.invalidProducts = false;
+                self.invalidProducts = false;
+                // this.invalidProducts = false;
               }
             });
           }
@@ -153,7 +159,7 @@ prNames;
     // prepare order object for saving
     order.statusClass = true;
     if ( order.status == 'pending') {
-      order.statusClass = true;
+      order.statusClass = false;
     }
     order.date = Date.now();
     order.orderSum = 0;
@@ -175,10 +181,14 @@ prNames;
   onRead(id) {
     this.db.object(`orders/${id}`).subscribe(snapshots => {
       this.editOrderModel = snapshots;
+      console.log(snapshots);
+      
       setTimeout(() => {
-          $('#payMeth').val(snapshots.priceMethod);
-          // $('#payMeth').trigger('chosen:updated');
+        console.log(snapshots.priceMethod);
+        // $('#payMeth').val(null);
           $('#payMeth').chosen();
+          $('#payMeth').val(snapshots.priceMethod);
+          $('#payMeth').trigger('chosen:updated');
           $('#payMeth').on('change', (e) => {
             console.log($('#payMeth').val());
           });
@@ -196,6 +206,7 @@ prNames;
     }
     console.log(order.products);
     order.priceMethod = $('#payMeth').val();
+    order.quantity = +this.editOrderModel.quantity;
     this.db.list('products').subscribe(
       products => {
         // get summary price
@@ -204,7 +215,7 @@ prNames;
         .reduce((acc, item) => acc += +item.price, 0);
         console.log(`price summary : ${priceSumm}`);
 
-        order.orderSum = this.editOrderModel.quantity * priceSumm;
+        order.orderSum = +this.editOrderModel.quantity * priceSumm;
 
         // firebase save
         this.orders.update(order.$key, order);
@@ -213,7 +224,7 @@ prNames;
         $('#edit-form').modal('toggle');
 
         // reset form
-        form.resetForm();
+        // form.resetForm();
         $('#payMeth').val([]);
         this.editOrderModel = new Order();
       }

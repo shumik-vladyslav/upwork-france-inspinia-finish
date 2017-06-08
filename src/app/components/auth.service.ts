@@ -22,12 +22,16 @@ export class AuthGuard implements CanActivate {
     });
   }
 
-  canActivate(){
-    if (Cookie.getAll()['User']) {
-      return true;
-    } else {
-      this.router.navigate([ '/login' ]);
+  canActivate() {
+    const user = Cookie.getAll()['User'];
+    console.log(user);
+    
+    if (!user) {
+      this.router.navigate([ 'login' ]);
+      return false; 
     }
+    return true;
+    // this.router.navigate([ '/login' ]);
   }
 
 }

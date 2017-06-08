@@ -61,6 +61,7 @@ export class LoginUserComponent implements OnInit {
           }));
 
           // console.log(userInfo,44);
+          // todo redirects check
           this.router.navigate(['/dashboards/main-view']);
         });
 

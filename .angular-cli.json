@@ -35,10 +35,11 @@
         "../node_modules/metismenu/dist/metisMenu.js",
         "../node_modules/jquery-sparkline/jquery.sparkline.js",
         "../vendor/pace/pace.min.js",
-        "../vendor/footable/footable.all.min.js",
+
         "../vendor/summernote/summernote.min.js",
         "../vendor/slimscroll/jquery.slimscroll.min.js",
-        "../node_modules/chosen-js/chosen.jquery.js"
+        "../node_modules/chosen-js/chosen.jquery.js",
+        "../vendor/footable/footable.all.min.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

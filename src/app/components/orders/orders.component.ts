@@ -24,7 +24,7 @@ export class Order {
   date;
   orderSum;
   statusClass;
-
+  shopCart;
   constructor() {
       this.orderId = 0;
       this.clientName = '';
@@ -39,6 +39,11 @@ export class Order {
       this.date = '';
       this.orderSum = 0;
       this.priceMethod = '';
+      this.shopCart = [
+        // {name:'opa', price :10, qt: 3},
+        // {name:'kop', price :20, qt: 5},
+        // {name:'tor', price :4, qt: 10}
+      ];
   };
 }
 
@@ -229,5 +234,10 @@ prNames;
         this.editOrderModel = new Order();
       }
     );
+  }
+
+  onChangeProduct(event){
+    console.log(event);
+    
   }
 }

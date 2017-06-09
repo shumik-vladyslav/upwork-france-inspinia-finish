@@ -1,270 +1,304 @@
 <!-- Main view/routes wrapper-->
 <div class="row wrapper border-bottom white-bg page-heading">
-   <div class="col-lg-10">
-      <h2>Orders list</h2>
-      <ol class="breadcrumb">
-         <li>
-            <a href="#/dashboards/main-view">Home</a>
-         </li>
-         <li class="active">
-            <strong>Orders list</strong>
-         </li>
-      </ol>
-   </div>
-   <div class="col-lg-2">
-      <div class="text-center" style="float: right;margin-top: 30px;">
-         <a data-toggle="modal" class="btn btn-primary" href="#create-form" (click)="onCreateDialogShow()">Create order</a> 
-      </div>
-   </div>
+  <div class="col-lg-10">
+    <h2>Orders list</h2>
+    <ol class="breadcrumb">
+      <li>
+        <a href="#/dashboards/main-view">Home</a>
+      </li>
+      <li class="active">
+        <strong>Orders list</strong>
+      </li>
+    </ol>
+  </div>
+  <div class="col-lg-2">
+    <div class="text-center" style="float: right;margin-top: 30px;">
+      <a data-toggle="modal" class="btn btn-primary" href="#create-form" (click)="onCreateDialogShow()">Create order</a>
+    </div>
+  </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight ecommerce">
-   <!--create order dialog-->
-   <div id="create-form" class="modal fade" aria-hidden="true">
-      <div class="modal-dialog">
-         <div class="modal-content">
-            <div class="modal-header">
-               <button type="button" class="close" data-dismiss="modal">&times;</button>
-               <h4 class="modal-title">Create order</h4>
-            </div>
-            <div class="modal-body">
-               <div class="row">
-                  <form class="form-edit" #createOrderForm="ngForm">
-                     <div class="row">
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label" for="clientName">Client Name</label>
-                              <select required [(ngModel)]="createOrderModel.clientName" name="clientName" id="clientName" class="form-control" 
-                              #name="ngModel" placeholder="Client Name">
+  <!--create order dialog-->
+  <div id="create-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Create order</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <form class="form-edit" #createOrderForm="ngForm">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="clientName">Client Name</label>
+                    <select required [(ngModel)]="createOrderModel.clientName" name="clientName" id="clientName" class="form-control" #name="ngModel"
+                      placeholder="Client Name">
                               <option *ngFor="let client of clients | async" value="{{client.name}}">{{client.name}}</option>
                               </select>
-                              <!--validation name block-->
-                                <div *ngIf="name.errors && (name.dirty || name.touched)"
-                                    class="alert alert-danger">
-                                    <div [hidden]="!name.errors.required">
-                                        Client name is required
-                                    </div>
-                                    <div [hidden]="!name.errors.pattern">
-                                        Name must contain leters and numbers only.
-                                    </div>
-                                </div>
-                                <!--end validation namr block-->
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label  class="control-label" for="products">Product</label>
-                              <select required multiple id="products" name="products" class="form-control" placeholder="Product" 
-                               #products >
-                                 <option *ngFor="let product of productsNames" value="{{product.name}}">{{product.name}}</option>
-                              </select>
-                              <!--validation name block-->
-                                <div *ngIf="products.errors && (products.dirty || products.touched)"
-                                    class="alert alert-danger">
-                                    <div [hidden]="!products.errors.required">
-                                    Products list canot be empty.
-                                    </div>
-                                </div>
-                                <!--end validation namr block-->
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label" for="paid">Price paid/unpaid</label>
-                              <select [(ngModel)]="createOrderModel.paid" name="paid" id="paid" class="form-control" placeholder="Price paid/unpaid">
+                    <!--validation name block-->
+                    <div *ngIf="name.errors && (name.dirty || name.touched)" class="alert alert-danger">
+                      <div [hidden]="!name.errors.required">
+                        Client name is required
+                      </div>
+                      <div [hidden]="!name.errors.pattern">
+                        Name must contain leters and numbers only.
+                      </div>
+                    </div>
+                    <!--end validation namr block-->
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="products">Product</label>
+                    <select required id="products1" name="products" class="form-control" 
+                    (change)="createOrderModel.shopCart.push(productsNames[$event.target.options.selectedIndex]);
+                    productsNames.splice($event.target.options.selectedIndex,1)" 
+                    placeholder="Product" #products [(ngModel)]="selectedProducts">
+                            <option data="i" *ngFor="let product of productsNames;let i=index" value="{{product.name}}">{{product.name}}</option>
+                    </select>
+                    <!--validation name block-->
+                    <!--<div *ngIf="products.errors && (products.dirty || products.touched)" class="alert alert-danger">
+                      <div [hidden]="!products.errors.required">
+                        Products list canot be empty.
+                      </div>
+                    </div>-->
+                    <!--end validation namr block-->
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+                      <tbody>
+                        <tr *ngFor="let item of createOrderModel.shopCart; let i=index">
+                          <td>
+                            {{item.name}}
+                          </td>
+                          <td>
+                            {{item.price}}
+                          </td>
+                          <td>
+                            <input type="number" min="1" max="{{item.quantity}}" [(ngModel)]="item.bayQt" value="{{item.quantity}}" name="shopCartQt" />
+                          </td>
+                          <td>
+                            {{item.quantity * item.price}}
+                          </td>
+                          <td class="text-right">
+                            <button type="button" (click)="productsNames.push(item);createOrderModel.shopCart.splice(i, 1);" class="btn btn-danger">Delete</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="4">
+                            <h4> Total: </h4>
+                          </td>
+                          <td class="text-right">
+                            <h4> {{createOrderModel.shopCart | sum:'price':'bayQt' }} </h4>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="paid">Price paid/unpaid</label>
+                    <select [(ngModel)]="createOrderModel.paid" name="paid" id="paid" class="form-control" placeholder="Price paid/unpaid">
                               <option value="paid" >paid</option>
                               <option value="unpaid" selected>unpaid</option>
                               </select>
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label" for="status">Status</label>
-                              <select [(ngModel)]="createOrderModel.status" name="status" id="status" class="form-control" placeholder="Status" value="Pending">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="status">Status</label>
+                    <select [(ngModel)]="createOrderModel.status" name="status" id="status" class="form-control" placeholder="Status" value="Pending">
                               <option value="pending" selected>Pending</option>
                               <option value="done">Done</option>
                               </select>
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                               <!--{{invalidProducts || createOrderForm.invalid}}<br>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <!--{{invalidProducts || createOrderForm.invalid}}<br>
                                {{invalidProducts && createOrderForm.invalid}}<br>
                                {{invalidProducts }}<br>
                                {{createOrderForm.invalid}}<br>-->
-                              <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts || createOrderForm.invalid">Create order</button>
-                           </div>
-                           <!--<div *ngIf="invalidProducts" class="alert alert-danger">
+                    <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts || createOrderForm.invalid">Create order</button>
+                  </div>
+                  <!--<div *ngIf="invalidProducts" class="alert alert-danger">
                                opopo
                            </div>-->
-                        </div>
-                     </div>
-                  </form>
-               </div>
-            </div>
-         </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-   </div>
-   <!--end create dialog-->
-   <!--edit order dialog-->
-   <div id="edit-form" class="modal fade" aria-hidden="true">
-      <div class="modal-dialog">
-         <div class="modal-content">
-            <div class="modal-header">
-               <button type="button" class="close" data-dismiss="modal">&times;</button>
-               <h4 class="modal-title">Edit order</h4>
-            </div>
-            <div class="modal-body">
-               <form class="form-edit" #updateOrderForm="ngForm">
-                  <div class="row">
-                     <fieldset class="form-horizontal">
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label" for="ename">Client Name</label>
-                              <input id="ename" disabled [(ngModel)]="editOrderModel.clientName" name="clientName2" type="text" class="form-control" placeholder="Client Name">
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label">Products</label>
-                              <input id="eproducts" disabled [(ngModel)]="editOrderModel.products" name="products" type="text" class="form-control" placeholder="Products">
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label">Quantity</label>
-                              <input required #quantity="ngModel" [(ngModel)]="editOrderModel.quantity" name="quantity" type="text" class="form-control" 
-                              equired minlength="1" maxlength="4" pattern="^[0-9]+$" placeholder="Quantity">
-                              <!--validation block-->
-                              <div *ngIf="quantity.errors && (quantity.dirty || quantity.touched)"
-                                    class="alert alert-danger">
-                                    <div [hidden]="!quantity.errors.required">
-                                    Quantity is required
-                                    </div>
-                                    <div [hidden]="!quantity.errors.minlength">
-                                    Quantity must be at least 1 characters long.
-                                    </div>
-                                    <div [hidden]="!quantity.errors.maxlength">
-                                    Quantity cannot be more than 4 characters long.
-                                    </div>
-                                    <div [hidden]="!quantity.errors.pattern">
-                                    Quantity  must be number
-                                    </div>
-                                </div>
-                                <!--end validation namr block-->
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label">Price paid/unpaid</label>
-                              <select [(ngModel)]="editOrderModel.paid" name="paid2" id="paid2" class="form-control" placeholder="Price paid/unpaid">
+    </div>
+  </div>
+  <!--end create dialog-->
+  <!--edit order dialog-->
+  <div id="edit-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Edit order</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-edit" #updateOrderForm="ngForm">
+            <div class="row">
+              <fieldset class="form-horizontal">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="ename">Client Name</label>
+                    <input id="ename" disabled [(ngModel)]="editOrderModel.clientName" name="clientName2" type="text" class="form-control" placeholder="Client Name">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label">Products</label>
+                    <input id="eproducts" disabled [(ngModel)]="editOrderModel.products" name="products" type="text" class="form-control" placeholder="Products">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label">Quantity</label>
+                    <input required #quantity="ngModel" [(ngModel)]="editOrderModel.quantity" name="quantity" type="text" class="form-control"
+                      equired minlength="1" maxlength="4" pattern="^[0-9]+$" placeholder="Quantity">
+                    <!--validation block-->
+                    <div *ngIf="quantity.errors && (quantity.dirty || quantity.touched)" class="alert alert-danger">
+                      <div [hidden]="!quantity.errors.required">
+                        Quantity is required
+                      </div>
+                      <div [hidden]="!quantity.errors.minlength">
+                        Quantity must be at least 1 characters long.
+                      </div>
+                      <div [hidden]="!quantity.errors.maxlength">
+                        Quantity cannot be more than 4 characters long.
+                      </div>
+                      <div [hidden]="!quantity.errors.pattern">
+                        Quantity must be number
+                      </div>
+                    </div>
+                    <!--end validation namr block-->
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label">Price paid/unpaid</label>
+                    <select [(ngModel)]="editOrderModel.paid" name="paid2" id="paid2" class="form-control" placeholder="Price paid/unpaid">
                               <option value="paid">paid</option>
                               <option value="unpaid">unpaid</option>
                               </select>
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label  class="control-label" for="payMeth">Price methods</label>
-                              <select multiple name="method" id="payMeth" class="form-control" placeholder="Method">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="payMeth">Price methods</label>
+                    <select multiple name="method" id="payMeth" class="form-control" placeholder="Method">
                                  <option *ngFor="let method of priceMethods" value="{{method.value}}">{{method.value}}</option>
                               </select>
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label">Notes</label>
-                              <input [(ngModel)]="editOrderModel.notes" name="notes" type="text" class="form-control" placeholder="Notes">
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label">Ticket Number</label>
-                              <input [(ngModel)]="editOrderModel.ticketNumber" name="ticketNumber" type="text" class="form-control" placeholder="Ticket Number">
-                           </div>
-                        </div>
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <label class="control-label">Status</label>
-                              <select [(ngModel)]="editOrderModel.status" name="status2" id="editOrderModel.status" class="form-control" placeholder="Status">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label">Notes</label>
+                    <input [(ngModel)]="editOrderModel.notes" name="notes" type="text" class="form-control" placeholder="Notes">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label">Ticket Number</label>
+                    <input [(ngModel)]="editOrderModel.ticketNumber" name="ticketNumber" type="text" class="form-control" placeholder="Ticket Number">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label">Status</label>
+                    <select [(ngModel)]="editOrderModel.status" name="status2" id="editOrderModel.status" class="form-control" placeholder="Status">
                               <option value="pending">Pending</option>
                               <option value="done">Done</option>
                               </select>
-                           </div>
-                        </div>
-                        <!--<div class="col-sm-12">
+                  </div>
+                </div>
+                <!--<div class="col-sm-12">
                            <div class="form-group">
                              
                            </div>
                            </div>-->
-                        <div class="col-sm-12">
-                           <div class="form-group">
-                              <button type="button" (click)="onUpdate(updateOrderForm)" class="btn btn-success" [disabled]="updateOrderForm.invalid">Save</button>    
-                           </div>
-                        </div>
-                     </fieldset>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <button type="button" (click)="onUpdate(updateOrderForm)" class="btn btn-success" [disabled]="updateOrderForm.invalid">Save</button>
                   </div>
-               </form>
+                </div>
+              </fieldset>
             </div>
-         </div>
+          </form>
+        </div>
       </div>
-   </div>
-   <!--end edit dialog-->
-   <div class="row">
-      <div class="col-lg-12">
-         <div class="ibox">
-            <div class="ibox-content">
-               <div class="input-group">
-                  <input type="text" [(ngModel)]="searchOrder" placeholder="Search order " class="input form-control">
-                  <span class="input-group-btn">
+    </div>
+  </div>
+  <!--end edit dialog-->
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="input-group">
+            <input type="text" [(ngModel)]="searchOrder" placeholder="Search order " class="input form-control">
+            <span class="input-group-btn">
                   <button type="button" class="btn btn btn-primary"> <i class="fa fa-search"></i> Search</button>
                   </span>
-               </div>
-               <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
-                  <thead>
-                     <tr>
-                        <th data-toggle="true">Order ID</th>
-                        <th data-toggle="true">Created</th>
-                        <th data-hide="phone">Client name</th>
-                        <th data-hide="status">Status</th>
-                        <th data-hide="Price">Paid/unpaid</th>
-                        <th class="text-right" data-sort-ignore="true">Action</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <tr *ngFor="let order of orders | async | likefilter:searchOrder">
-                        <td>
-                           {{order.orderId}}
-                        </td>
-                        <td>
-                            {{ order.date |  date }}
-                        </td>
-                        <td>
-                           {{order.clientName}}
-                        </td>
-                        <td>
-                           <span class="label" [ngClass]="{ 'label-primary' : order.statusClass, 'label-danger' : !order.statusClass }">{{order.status}}</span>
-                        </td>
-                        <td>
-                           {{order.paid}}
-                        </td>
-                        <td class="text-right">
-                           <div class="btn-group">
-                              <a data-toggle="modal" class="btn btn-primary" (click)="onRead(order.$key)" href="#edit-form">View order</a>
-                           </div>
-                        </td>
-                     </tr>
-                  </tbody>
-                  <tfoot>
-                     <tr>
-                        <td colspan="6">
-                           <ul class="pagination pull-right"></ul>
-                        </td>
-                     </tr>
-                  </tfoot>
-               </table>
-            </div>
-         </div>
+          </div>
+          <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+            <thead>
+              <tr>
+                <th data-toggle="true" data-type="number">Order ID</th>
+                <th data-toggle="true" >Created</th>
+                <th data-hide="phone">Client name</th>
+                <th data-hide="status">Status</th>
+                <th data-hide="Price">Paid/unpaid</th>
+                <th class="text-right" data-sort-ignore="true">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders | async | likefilter:searchOrder">
+                <td>
+                  {{+order.orderId}}
+                </td>
+                <td>
+                  {{ order.date | date }}
+                </td>
+                <td>
+                  {{order.clientName}}
+                </td>
+                <td>
+                  <span class="label" [ngClass]="{ 'label-primary' : order.statusClass, 'label-danger' : !order.statusClass }">{{order.status}}</span>
+                </td>
+                <td>
+                  {{order.paid}}
+                </td>
+                <td class="text-right">
+                  <div class="btn-group">
+                    <a data-toggle="modal" class="btn btn-primary" (click)="onRead(order.$key)" href="#edit-form">View order</a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6">
+                  <ul class="pagination pull-right"></ul>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
-   </div>
+    </div>
+  </div>
 </div>
 <!-- End page wrapper-->

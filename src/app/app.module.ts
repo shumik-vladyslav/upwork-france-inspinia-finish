@@ -39,6 +39,7 @@ import { PeityModule } from './components/charts/peity';
 import { SparklineModule } from './components/charts/sparkline';
 import { JVectorMapModule } from './components/map/jvectorMap';
 import { LikePipe } from './pipes/LikePipe';
+import { SumPipe } from './pipes/SumPipe';
 import { ApplyChosenPipe } from './pipes/ApplyChosenPipe';
 
 // App views
@@ -85,6 +86,7 @@ export const firebaseConfig = {
     PaymentComponent,
     MessagesComponent,
     LikePipe,
+    SumPipe,
     ApplyChosenPipe
   ],
   imports: [

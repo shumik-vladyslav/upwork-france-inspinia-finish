@@ -50,19 +50,19 @@ import {LayoutsModule} from "./components/common/layouts/layouts.module";
 
 // Must export the config
 export const firebaseConfig = {
-  apiKey: "AIzaSyDC5ADo5Py712aENWVr-eAV_jFgrIkc798",
-  authDomain: "shopexpresso-21a20.firebaseapp.com",
-  databaseURL: "https://shopexpresso-21a20.firebaseio.com",
-  projectId: "shopexpresso-21a20",
-  storageBucket: "shopexpresso-21a20.appspot.com",
-  messagingSenderId: "1036152108027"
+  // apiKey: "AIzaSyDC5ADo5Py712aENWVr-eAV_jFgrIkc798",
+  // authDomain: "shopexpresso-21a20.firebaseapp.com",
+  // databaseURL: "https://shopexpresso-21a20.firebaseio.com",
+  // projectId: "shopexpresso-21a20",
+  // storageBucket: "shopexpresso-21a20.appspot.com",
+  // messagingSenderId: "1036152108027"
 
-  // apiKey: "AIzaSyDbxiYt1lbq864KAWVTpmz_Qvw-AY3PTPo",
-  // authDomain: "inspinia-admin.firebaseapp.com",
-  // databaseURL: "https://inspinia-admin.firebaseio.com",
-  // projectId: "inspinia-admin",
-  // storageBucket: "inspinia-admin.appspot.com",
-  // messagingSenderId: "372127658203"
+  apiKey: "AIzaSyDbxiYt1lbq864KAWVTpmz_Qvw-AY3PTPo",
+  authDomain: "inspinia-admin.firebaseapp.com",
+  databaseURL: "https://inspinia-admin.firebaseio.com",
+  projectId: "inspinia-admin",
+  storageBucket: "inspinia-admin.appspot.com",
+  messagingSenderId: "372127658203"
 };
 
 @NgModule({

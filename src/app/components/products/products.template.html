@@ -4,10 +4,7 @@
     <h2>Product list</h2>
     <ol class="breadcrumb">
       <li>
-        <a href="index.html">Home</a>
-      </li>
-      <li>
-        <a>E-commerce</a>
+        <a href="#/dashboards/main-view">Home</a>
       </li>
       <li class="active">
         <strong>Products list</strong>
@@ -15,185 +12,173 @@
     </ol>
   </div>
   <div class="col-lg-2">
-      <div class="text-center" style="float: right;margin-top: 30px;">
-        <a data-toggle="modal" class="btn btn-primary" href="#create-form">Create product</a>
-      </div>
+    <div class="text-center" style="float: right;margin-top: 30px;">
+      <a data-toggle="modal" class="btn btn-primary" href="#create-form">Create product</a>
+    </div>
   </div>
 </div>
 
 <div class="wrapper wrapper-content animated fadeInRight ecommerce">
-      <!--create dialog-->
-      <div id="create-form" class="modal fade" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Create product</h4>
-            </div>
-            <div class="modal-body">
+  <!--create dialog-->
+  <div id="create-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Create product</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <form class="form-edit" #myForm="ngForm" novalidate (ngSubmit)="onCreate(myForm)">
               <div class="row">
-                <form class="form-edit" #myForm="ngForm" novalidate (ngSubmit)="onCreate(myForm)">
-                  <div class="row">
-                    <div class="col-sm-12">
-                      <div class="form-group">
-                        <!--input name block-->
-                        <label class="control-label" for="product_name">Name</label>
-                        <input type="text" id="product_name" class="form-control" placeholder="Name" required
-                              required minlength="4" maxlength="24" pattern="^[a-zA-Z0-9]+$"
-                              name="name" [(ngModel)]="createModel.name"
-                              #pname="ngModel" >
-                         <!--end input name block-->
-                        <!--validation name block-->
-                        <div *ngIf="pname.errors && (pname.dirty || pname.touched)" class="alert alert-danger">
-                            <div [hidden]="!pname.errors.required">
-                              Name is required
-                            </div>
-                            <div [hidden]="!pname.errors.minlength">
-                              Name must be at least 4 characters long.
-                            </div>
-                            <div [hidden]="!pname.errors.maxlength">
-                              Name cannot be more than 24 characters long.
-                            </div>
-                            <div [hidden]="!pname.errors.pattern">
-                                Name must contain leters and numbers only.
-                            </div>
-                        </div>
-                        <!--end validation namr block-->
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <!--input name block-->
+                    <label class="control-label" for="product_name">Name</label>
+                    <input type="text" id="product_name" class="form-control" placeholder="Name" required required minlength="4" maxlength="24"
+                      pattern="^[a-zA-Z0-9]+$" name="name" [(ngModel)]="createModel.name" #pname="ngModel">
+                    <!--end input name block-->
+                    <!--validation name block-->
+                    <div *ngIf="pname.errors && (pname.dirty || pname.touched)" class="alert alert-danger">
+                      <div [hidden]="!pname.errors.required">
+                        Name is required
+                      </div>
+                      <div [hidden]="!pname.errors.minlength">
+                        Name must be at least 4 characters long.
+                      </div>
+                      <div [hidden]="!pname.errors.maxlength">
+                        Name cannot be more than 24 characters long.
+                      </div>
+                      <div [hidden]="!pname.errors.pattern">
+                        Name must contain leters and numbers only.
+                      </div>
+                    </div>
+                    <!--end validation namr block-->
 
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="price">Price</label>
+                    <input type="text" id="price" required pattern="[0-9]{1,4}" [(ngModel)]="createModel.price" name="price" value="" placeholder="Price"
+                      class="form-control" required minlength="1" maxlength="4" #price="ngModel">
+                    <div *ngIf="price.errors && (price.dirty || price.touched)" class="alert alert-danger">
+                      <div [hidden]="!price.errors.required">
+                        Price is required
                       </div>
-                    </div>
-                    <div class="col-sm-12">
-                      <div class="form-group">
-                        <label class="control-label" for="price">Price</label>
-                        <input type="text" id="price" required pattern="[0-9]{1,4}" [(ngModel)]="createModel.price" 
-                        name="price" value="" placeholder="Price" class="form-control" required minlength="1" maxlength="4" #price="ngModel">
-                        <div *ngIf="price.errors && (price.dirty || price.touched)"
-                            class="alert alert-danger">
-                            <div [hidden]="!price.errors.required">
-                            Price is required
-                            </div>
-                            <div [hidden]="!price.errors.pattern">
-                            Price must be a number
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-sm-12">
-                      <div class="form-group">
-                        <label class="control-label" for="quantity">Quantity</label>
-                        <input type="text" id="quantity" [(ngModel)]="createModel.quantity"  #pquantity="ngModel"
-                        name="quantity" value="" placeholder="Quantity" class="form-control" required pattern="[0-9]{1,4}" minlength="1" maxlength="4">
-                        <div *ngIf="pquantity.errors && (pquantity.dirty || pquantity.touched)"
-                            class="alert alert-danger">
-                            <div [hidden]="!pquantity.errors.required">
-                            Quantity is required
-                            </div>
-                            <div [hidden]="!pquantity.errors.pattern">
-                            Quantity  must be number
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-sm-12">
-                      <div class="form-group">
-                        <button type="submit" class="btn btn-success" [disabled]="myForm.invalid">Create product</button>
+                      <div [hidden]="!price.errors.pattern">
+                        Price must be a number
                       </div>
                     </div>
                   </div>
-                </form>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="control-label" for="quantity">Quantity</label>
+                    <input type="text" id="quantity" [(ngModel)]="createModel.quantity" #pquantity="ngModel" name="quantity" value="" placeholder="Quantity"
+                      class="form-control" required pattern="[0-9]{1,4}" minlength="1" maxlength="4">
+                    <div *ngIf="pquantity.errors && (pquantity.dirty || pquantity.touched)" class="alert alert-danger">
+                      <div [hidden]="!pquantity.errors.required">
+                        Quantity is required
+                      </div>
+                      <div [hidden]="!pquantity.errors.pattern">
+                        Quantity must be number
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-success" [disabled]="myForm.invalid">Create product</button>
+                  </div>
+                </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
-      <!--end create dialog-->
-      <!--edit dialog-->
-      <div id="edit-form" class="modal fade" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Edit product</h4>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <form class="form-edit" #myEditForm="ngForm">
-                  <fieldset class="form-horizontal">
-                    <div class="form-group"><label class="col-sm-2 control-label">Name:</label>
-                      <div class="col-sm-10">
-                        <!--<input [(ngModel)]="editModel.name" name="name2" type="text" class="form-control" placeholder="Name">-->
-                      <input type="text" id="product_name" class="form-control" placeholder="Name" required
-                              required minlength="4" maxlength="24" pattern="^[a-zA-Z0-9]+$"
-                              name="name" [(ngModel)]="editModel.name"
-                              #name="ngModel" >
+    </div>
+  </div>
+  <!--end create dialog-->
+  <!--edit dialog-->
+  <div id="edit-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Edit product</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <form class="form-edit" #myEditForm="ngForm">
+              <fieldset class="form-horizontal">
+                <div class="form-group"><label class="col-sm-2 control-label">Name:</label>
+                  <div class="col-sm-10">
+                    <!--<input [(ngModel)]="editModel.name" name="name2" type="text" class="form-control" placeholder="Name">-->
+                    <input type="text" id="product_name" class="form-control" placeholder="Name" required required minlength="4" maxlength="24"
+                      pattern="^[a-zA-Z0-9]+$" name="name" [(ngModel)]="editModel.name" #name="ngModel">
 
-                        <div *ngIf="name.errors && (name.dirty || name.touched)"
-                            class="alert alert-danger">
-                            <div [hidden]="!name.errors.required">
-                              Name is required
-                            </div>
-                            <div [hidden]="!name.errors.minlength">
-                              Name must be at least 4 characters long.
-                            </div>
-                            <div [hidden]="!name.errors.maxlength">
-                              Name cannot be more than 24 characters long.
-                            </div>
-                            <div [hidden]="!name.errors.pattern">
-                                Name must contain leters and numbers only.
-                            </div>
-                        </div>
+                    <div *ngIf="name.errors && (name.dirty || name.touched)" class="alert alert-danger">
+                      <div [hidden]="!name.errors.required">
+                        Name is required
+                      </div>
+                      <div [hidden]="!name.errors.minlength">
+                        Name must be at least 4 characters long.
+                      </div>
+                      <div [hidden]="!name.errors.maxlength">
+                        Name cannot be more than 24 characters long.
+                      </div>
+                      <div [hidden]="!name.errors.pattern">
+                        Name must contain leters and numbers only.
                       </div>
                     </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">Price:</label>
-                      <div class="col-sm-10"><input [(ngModel)]="editModel.price" name="price2" #price="ngModel"
-                      type="text" class="form-control" placeholder="Price" required pattern="[0-9]{1,4}" minlength="1" maxlength="4">
-                      <div *ngIf="price.errors && (price.dirty || price.touched)"
-                            class="alert alert-danger">
-                            <div [hidden]="!price.errors.required">
-                            Price is required
-                            </div>
-                            <div [hidden]="!price.errors.pattern">
-                            Price must be a number
-                            </div>
-                        </div>
+                  </div>
+                </div>
+                <div class="form-group"><label class="col-sm-2 control-label">Price:</label>
+                  <div class="col-sm-10"><input [(ngModel)]="editModel.price" name="price2" #price="ngModel" type="text" class="form-control" placeholder="Price"
+                      required pattern="[0-9]{1,4}" minlength="1" maxlength="4">
+                    <div *ngIf="price.errors && (price.dirty || price.touched)" class="alert alert-danger">
+                      <div [hidden]="!price.errors.required">
+                        Price is required
+                      </div>
+                      <div [hidden]="!price.errors.pattern">
+                        Price must be a number
                       </div>
                     </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">Quantity:</label>
-                      <div class="col-sm-10"><input [(ngModel)]="editModel.quantity" name="quantity2" #pquantity="ngModel"
-                      type="text" class="form-control" placeholder="Quantity" required pattern="[0-9]{1,4}" minlength="1" maxlength="4">
-                      <div *ngIf="pquantity.errors && (pquantity.dirty || pquantity.touched)"
-                            class="alert alert-danger">
-                            <div [hidden]="!pquantity.errors.required">
-                            Quantity is required
-                            </div>
-                            <div [hidden]="!pquantity.errors.pattern">
-                            Quantity  must be number
-                            </div>
-                        </div>
+                  </div>
+                </div>
+                <div class="form-group"><label class="col-sm-2 control-label">Quantity:</label>
+                  <div class="col-sm-10"><input [(ngModel)]="editModel.quantity" name="quantity2" #pquantity="ngModel" type="text" class="form-control"
+                      placeholder="Quantity" required pattern="[0-9]{1,4}" minlength="1" maxlength="4">
+                    <div *ngIf="pquantity.errors && (pquantity.dirty || pquantity.touched)" class="alert alert-danger">
+                      <div [hidden]="!pquantity.errors.required">
+                        Quantity is required
+                      </div>
+                      <div [hidden]="!pquantity.errors.pattern">
+                        Quantity must be number
                       </div>
                     </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">Description:</label>
-                      <div class="col-sm-10"><input [(ngModel)]="editModel.description" name="description" 
-                      type="text" class="form-control" placeholder="Description"></div>
-                    </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">Category:</label>
-                      <div class="col-sm-10"><input [(ngModel)]="editModel.category" name="category" 
-                      type="text" class="form-control" placeholder="Category"></div>
-                    </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">Tag:</label>
-                      <div class="col-sm-10"><input [(ngModel)]="editModel.tag" name="tag" 
-                      type="text" class="form-control" placeholder="Tag"></div>
-                    </div>
-                    <!--<input type="submit" value="submit" class="btn btn-success">-->
-                    <button type="button" (click)="onUpdate(myEditForm)" class="btn btn-success" [disabled]="myEditForm.invalid">Save</button> 
-                  </fieldset>
-                </form>
-              </div>
-            </div>
+                  </div>
+                </div>
+                <div class="form-group"><label class="col-sm-2 control-label">Description:</label>
+                  <div class="col-sm-10"><input [(ngModel)]="editModel.description" name="description" type="text" class="form-control" placeholder="Description"></div>
+                </div>
+                <div class="form-group"><label class="col-sm-2 control-label">Category:</label>
+                  <div class="col-sm-10"><input [(ngModel)]="editModel.category" name="category" type="text" class="form-control" placeholder="Category"></div>
+                </div>
+                <div class="form-group"><label class="col-sm-2 control-label">Tag:</label>
+                  <div class="col-sm-10"><input [(ngModel)]="editModel.tag" name="tag" type="text" class="form-control" placeholder="Tag"></div>
+                </div>
+                <!--<input type="submit" value="submit" class="btn btn-success">-->
+                <button type="button" (click)="onUpdate(myEditForm)" class="btn btn-success" [disabled]="myEditForm.invalid">Save</button>
+              </fieldset>
+            </form>
           </div>
         </div>
       </div>
-      <!--end edit dialog-->
+    </div>
+  </div>
+  <!--end edit dialog-->
   <div class="row">
     <div class="col-lg-12">
       <div class="ibox">
@@ -206,39 +191,39 @@
           </div>
           <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
             <thead>
-            <tr>
+              <tr>
 
-              <th data-toggle="true">Name</th>
-              <th data-hide="phone" >Price</th>
-              <th data-hide="quantity">Quantity</th>
-              <th class="text-right" data-sort-ignore="true">Action</th>
+                <th data-toggle="true">Name</th>
+                <th data-hide="phone">Price</th>
+                <th data-hide="quantity">Quantity</th>
+                <th class="text-right" data-sort-ignore="true">Action</th>
 
-            </tr>
+              </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let product of products | async | likefilter:searchProduct;let i=index">
-              <td>
-                {{product.name}}
-              </td>
-              <td>
-                {{product.price}}
-              </td>
-              <td>
-                {{product.quantity}}
-              </td>
-              <td class="text-right">
-                <div class="btn-group">
-                  <a data-toggle="modal" class="btn btn-primary" (click)="onGet(product.$key)" href="#edit-form">View product</a>
-                </div>
-              </td>
-            </tr>
+              <tr *ngFor="let product of products | async | likefilter:searchProduct;let i=index">
+                <td>
+                  {{product.name}}
+                </td>
+                <td>
+                  {{product.price}}
+                </td>
+                <td>
+                  {{product.quantity}}
+                </td>
+                <td class="text-right">
+                  <div class="btn-group">
+                    <a data-toggle="modal" class="btn btn-primary" (click)="onGet(product.$key)" href="#edit-form">View product</a>
+                  </div>
+                </td>
+              </tr>
             </tbody>
             <tfoot>
-            <tr>
-              <td colspan="6">
-                <ul class="pagination pull-right"></ul>
-              </td>
-            </tr>
+              <tr>
+                <td colspan="6">
+                  <ul class="pagination pull-right"></ul>
+                </td>
+              </tr>
             </tfoot>
           </table>
 

@@ -4,10 +4,7 @@
       <h2>Clients list</h2>
       <ol class="breadcrumb">
          <li>
-            <a href="index.html">Home</a>
-         </li>
-         <li>
-            <a>E-commerce</a>
+            <a href="#/dashboards/main-view">Home</a>
          </li>
          <li class="active">
             <strong>Clients list</strong>
@@ -38,7 +35,7 @@
                      <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" id="name" class="form-control"
-                        required minlength="4" maxlength="24" pattern="^[a-zA-Z0-9]+$"
+                        required minlength="4" maxlength="24" pattern="^[a-zA-Z0-9_-]+$"
                         name="name" [(ngModel)]="crClientModel.name"
                         #cname="ngModel" >
                         <div *ngIf="cname.errors && (cname.dirty || cname.touched)"
@@ -61,8 +58,8 @@
                   <div class="col-sm-12">
                      <div class="form-group">
                         <label class="control-label" for="phone">Phone</label>
-                        <input type="text" id="phone" pattern="^\d{4}-\d{3}-\d{4}$" [(ngModel)]="crClientModel.phone" 
-                        name="phone" #cphone="ngModel" placeholder="Phone (format: xxxx-xxx-xxxx)" class="form-control">
+                        <input type="text" id="phone" pattern="^[0-9-]+$" [(ngModel)]="crClientModel.phone" 
+                        name="phone" #cphone="ngModel" placeholder="Phone" class="form-control">
                         <div *ngIf="cphone.errors && (cphone.dirty || cphone.touched)"
                            class="alert alert-danger">
                            <div [hidden]="!cphone.errors.pattern">

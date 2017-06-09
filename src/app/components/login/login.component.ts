@@ -11,7 +11,8 @@ import { UserService } from "../shared/user.service";
   templateUrl: './login.component.html',
 })
 export class LoginUserComponent implements OnInit {
-
+  loginError = false;
+  errorMessage;
   state: string = '';
   error: any;
   user: any;
@@ -31,7 +32,6 @@ export class LoginUserComponent implements OnInit {
       return;
     }
 
-    let name =  formData.value.name;
     let email = formData.value.email;
     let password = formData.value.password;
 
@@ -41,11 +41,8 @@ export class LoginUserComponent implements OnInit {
           const fUser = data.filter(user => user.email.toLowerCase() == email.toLowerCase() )[0];
           if (!fUser) {
             console.log('Error user not found in firebase');
-            this.logout();
-            return;
-          }
-          if (fUser.name !== name) {
-            console.log('Wrong login');
+            this.loginError = true;
+            this.errorMessage = 'User not found in firebase';
             this.logout();
             return;
           }
@@ -69,6 +66,8 @@ export class LoginUserComponent implements OnInit {
       (err) => {
         console.log(err);
         this.error = err;
+        this.loginError = true;
+        this.errorMessage = err.message;
       });
   }
 
@@ -81,6 +80,7 @@ export class LoginUserComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loginError = false;
   }
 
 }

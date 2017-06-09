@@ -57,8 +57,8 @@ export class PaymentComponent implements OnInit {
     ) {
     }
 
-  onSubmit() {
-    const keys = Object.keys(this.optionsMap )
+  onSave() {
+    const keys = Object.keys(this.optionsMap)
     // console.log(keys);
 
     const fieldsForUpdate = {priceMethod: keys.filter((key) => this.optionsMap[key])};

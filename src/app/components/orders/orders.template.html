@@ -265,7 +265,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let order of orders | async | likefilter:searchOrder">
+              <tr *ngFor="let order of orders | async | likefilter:searchOrder" [ngClass]="{ 'selected-row' : order.orderId==selectedOrderId }">
                 <td data-type="number">
                   {{+order.orderId}}
                 </td>

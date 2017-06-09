@@ -72,7 +72,9 @@ export const ROUTES:Routes = [
       {path: 'products', component: ProductsComponent, canActivate: [AuthGuard]},
       {path: 'products/:id', component: EditProductComponent, canActivate: [AuthGuard]},
       {path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},
-      {path: 'orders/:id', component: EditOrderComponent, canActivate: [AuthGuard]},
+      {path: 'orders/:id', component: OrdersComponent, canActivate: [AuthGuard]},
+      // {path: 'orders/:id', component: EditOrderComponent, canActivate: [AuthGuard]},
+      
       {path: 'preferences', component: PreferencesComponent, canActivate: [AuthGuard]},
       {path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard]},
     ]

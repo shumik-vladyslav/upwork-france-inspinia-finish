@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { footable } from '../../app.helpers';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import {Router} from '@angular/router';
+import { Router, ActivatedRoute, Params} from '@angular/router';
 import { NgForm, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Cookie } from 'ng2-cookies';
 
@@ -72,8 +72,9 @@ export class OrdersComponent implements OnInit {
   selectedValue;
   priceMethods;
   selectedPriceMethos;
+  selectedOrderId;
 prNames;
-  constructor(public db: AngularFireDatabase, private router:Router) {
+  constructor(public db: AngularFireDatabase, private router: Router, private route : ActivatedRoute) {
     this.orders = db.list('/orders');
     this.clients = db.list('/clients');
     this.productsFrbsCollection = db.list('/products');
@@ -87,9 +88,12 @@ prNames;
   }
 
   public ngOnInit(): void {
-    setTimeout(() => {
-       this.invalidProducts = true;
-    }, 5000);
+    this.route.params.subscribe(
+      (params: Params) => {
+          this.selectedOrderId = params['id'];
+          console.log(`selectedOrderId ${JSON.stringify(params)}`);
+      }
+    );
     this.invalidProducts = true;
     this.firebaseUserKey =  JSON.parse(Cookie.getAll()['User']).firebaseKey;
     this.db.object(`users/${this.firebaseUserKey}`).subscribe(

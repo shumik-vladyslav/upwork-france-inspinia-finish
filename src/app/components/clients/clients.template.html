@@ -203,7 +203,7 @@
                            <label class=" control-label">Order history:</label>
                            <ul>
                               <li *ngFor="let order of filteredOrders">
-                                 {{ order.date |  date }} {{ order.products }} {{order.status}}
+                                  <a [routerLink]="['/orders', order.orderId]" data-dismiss="modal">{{ order.date | date }} {{ order.products }} {{order.status}}</a>
                               </li>
                            </ul>
                            <button type="button" (click)="onUpdate(editClientForm)" class="btn btn-success" [disabled]="editClientForm.invalid">Save</button>  
@@ -314,7 +314,7 @@
                         <label for="order-history" class=" control-label">Orders history:</label>
                         <ul index="order-history">
                            <li *ngFor="let order of filteredOrders">
-                              {{ order.date | date }} {{ order.products }} {{order.status}}
+                               <a [routerLink]="['/orders', order.orderId]">{{ order.date | date }} {{ order.products }} {{order.status}}</a>
                            </li>
                         </ul>
                      </div>

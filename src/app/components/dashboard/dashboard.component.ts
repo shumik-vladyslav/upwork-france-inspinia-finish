@@ -34,11 +34,19 @@ export class DashboardComponent implements OnDestroy, OnInit {
   sumCurrentMonth;
   sumLastMonth;
 
+  dailySales;
+  dailySalesPercent;
+
   private data2 = this.infos;
 
   // data for chart
   flotDataset: any;
 
+  newClients;
+  newClientsPercent;
+
+
+  barWidth;
   flotOptionsTemplate = {
     xaxis: {
       mode: 'time',
@@ -125,8 +133,19 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.daySort();
     // this.monthSort();
     // this.yearsSort();
+    const now = new Date();
+    const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
+    const prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
 
     this.ordersTable = db.list('/orders').subscribe(snapshots => {
+
+      const lastDay = now.getDate();
+      const prevDay = new Date (now.getFullYear(), now.getMonth(), lastDay - 1 ).getDate();
+
+      this.dailySales = snapshots.filter(o => new Date(o.date).getDate() == lastDay && o.paid == 'paid').length;
+      const prevDaySales = snapshots.filter(o => new Date(o.date).getDate() == prevDay && o.paid == 'paid').length;
+      this.dailySalesPercent = Math.floor(this.dailySales / prevDaySales * 100);
+
       this.income = 0;
       this.orders = 0;
       this.orderPercent = 0;
@@ -136,9 +155,6 @@ export class DashboardComponent implements OnDestroy, OnInit {
       this.sumCurrentMonth = 0;
       this.sumLastMonth = 0;
       ////
-      const now = new Date();
-      const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
-      const prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
 
       let lastMonthIncome = 0;
       let lastMonthOrders = 0;
@@ -163,9 +179,17 @@ export class DashboardComponent implements OnDestroy, OnInit {
       this.income = lastMonthIncome;
       this.incomePercent = Math.floor((lastMonthIncome - prevMonthIncome) / prevMonthIncome * 100);
     });
+
+    this.db.list('/clients').subscribe(
+        clients => {
+          this.newClients = clients.filter(c => c.date > lastMonth).length;
+          const newClientsPrevMonth = clients.filter(c => (new Date(c.date)).getMonth() == prevMonth).length;
+          this.newClientsPercent = Math.floor(this.newClients / newClientsPrevMonth * 100);
+        },
+        error => console.log('fetch clients errr ' + error)
+      );
   }
 
-barWidth;
  updateChartDatasets (orders, income = []) {
     this.flotDataset = [
         {
@@ -265,12 +289,9 @@ barWidth;
         let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
 
-        // this.flotOptions.yaxes[0].max = 70;
-        // this.flotOptions.yaxes[1].max = 100;
-
         setTimeout(() => {
           this.updateChartDatasets(letOrdersData, income);
-         
+
         }, 2000);
     });
   }
@@ -289,9 +310,6 @@ barWidth;
         let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getDateOfTimeStamp);
 
-        // this.flotOptions.yaxes[0].max = 70;
-        // this.flotOptions.yaxes[1].max = 100;
-
         setTimeout(() => {
           this.updateChartDatasets(letOrdersData, income);
         }, 2000);
@@ -307,25 +325,9 @@ barWidth;
     this.flotOptions= this.flotOptionsTemplate;
     this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
     let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
-        
-        // let income = snapshots.map(s => [s.date, s.orderSum]);
-        // income =  income.sort((a, b) => {
-        //   if (a[0] < b[0]) {return -1; }
-        //   if (a[0] > b[0]) {return 1; }
-        //   return 0;
-        // });
-        // console.log(income);
-        
-        // let letOrdersData = snapshots.map(s => [s.date, 1]);
-        // letOrdersData =  letOrdersData.sort((a, b) => {
-        //   if (a[0] < b[0]) {return -1; }
-        //   if (a[0] > b[0]) {return 1; }
-        //   return 0;
-        // });
+
         let income = this.prepareDatasetForChartIncome(orders,this.getHoursOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
-        // this.flotOptions.yaxes[0].max = 70;
-        // this.flotOptions.yaxes[1].max = 100;
 
         setTimeout(() => {
           this.updateChartDatasets(letOrdersData, income);

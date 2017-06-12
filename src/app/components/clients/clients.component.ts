@@ -18,6 +18,7 @@ export class Client {
   status;
   address;
   statusClass;
+  date;
 
   console () {
     this.name = '';
@@ -26,6 +27,7 @@ export class Client {
     this.status = 'Enabled';
     this.address = '';
     this.statusClass = true;
+    this.date = Date.now();
   }
 }
 
@@ -83,7 +85,7 @@ export class ClientsComponent {
 
   onCreate(form: NgForm) {
     const client = this.crClientModel;
-
+    client.date = Date.now();
     // prepare order object for saving
     client.statusClass = true;
     if ( client.status === 'Disabled') {

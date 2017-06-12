@@ -15,6 +15,8 @@ export class SignupComponent implements OnInit {
   error: any;
 
   users;
+  signUpError;
+  errorMessage;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, private router: Router) {
     this.users = db.list('/users');
@@ -22,7 +24,6 @@ export class SignupComponent implements OnInit {
 
   onSubmit(formData) {
     if(formData.valid) {
-      console.log(formData.value);
       let name =  formData.value.name;
       let email= formData.value.email;
       let password =  formData.value.password;
@@ -33,12 +34,14 @@ export class SignupComponent implements OnInit {
             email: email,
             password: password,
           });
-          console.log("Пользователь создан!");
-          this.router.navigate(['/dashboards/main-view'])
+          console.log("User is created.");
+          this.router.navigate(['/dashboards/main-view']);
         }).catch(
         (err) => {
+          this.signUpError = true;
+          this.errorMessage = err;
           this.error = err;
-        })
+        });
     }
   }
 

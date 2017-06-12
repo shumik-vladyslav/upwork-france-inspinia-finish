@@ -24,8 +24,11 @@ export class Order {
   date;
   orderSum;
   statusClass;
+  availableProducts;
   shopCart;
-  constructor() {
+  component;
+  constructor(component) {
+      this.component = component;
       this.orderId = 0;
       this.clientName = '';
       this.status = 'pending';
@@ -39,12 +42,39 @@ export class Order {
       this.date = '';
       this.orderSum = 0;
       this.priceMethod = '';
-      this.shopCart = [
-        // {name:'opa', price :10, qt: 3},
-        // {name:'kop', price :20, qt: 5},
-        // {name:'tor', price :4, qt: 10}
-      ];
+      this.availableProducts = [];
+      this.shopCart = [];
+      this.isValid();
   };
+
+  moveToShopCart(i) {
+    const pr = this.availableProducts[i];
+    pr.bayQt = pr.quantity;
+    this.shopCart.push(pr);
+    this.availableProducts.splice(i, 1);
+    this.recalcOrderSum();
+
+    this.isValid();
+  }
+
+  moveToAvail(i) {
+    this.availableProducts.push(this.shopCart[i]);
+    this.shopCart.splice(i, 1);
+    this.recalcOrderSum();
+    this.isValid();
+  }
+
+  isValid() {
+    if (this.shopCart.length <= 0) {
+        this.component.invalidProducts = true;
+    } else {
+        this.component.invalidProducts = false;
+    }
+  }
+
+  recalcOrderSum() {
+    this.orderSum = this.shopCart.reduce((acc, item) => acc += item.price * item.bayQt, 0);
+  }
 }
 
 @Component({
@@ -53,11 +83,11 @@ export class Order {
 })
 
 export class OrdersComponent implements OnInit {
-  createOrderModel: Order = new Order();
-  editOrderModel: Order = new Order();
+  createOrderModel: Order = new Order(this);
+  editOrderModel: Order = new Order(this);
 
   createOrderForm;
-  invalidProducts;
+  public invalidProducts;
   totalOrders;
   searchOrder;
 
@@ -73,7 +103,7 @@ export class OrdersComponent implements OnInit {
   priceMethods;
   selectedPriceMethos;
   selectedOrderId;
-prNames;
+
   constructor(public db: AngularFireDatabase, private router: Router, private route : ActivatedRoute) {
     this.orders = db.list('/orders');
     this.clients = db.list('/clients');
@@ -82,8 +112,6 @@ prNames;
     this.db.list('/orders').subscribe(snapshots => {
 
       this.totalOrders = snapshots.length;
-      console.log(`orders totalOrders ${this.totalOrders}`);
-
     });
   }
 
@@ -91,7 +119,6 @@ prNames;
     this.route.params.subscribe(
       (params: Params) => {
           this.selectedOrderId = params['id'];
-          console.log(`selectedOrderId ${JSON.stringify(params)}`);
       }
     );
     this.invalidProducts = true;
@@ -133,7 +160,8 @@ prNames;
 
   onCreateDialogShow(): void {
       this.productsFrbsCollection.subscribe(snapshots => {
-        this.productsNames = snapshots;
+        this.createOrderModel.availableProducts = snapshots.map(i => {i.bayQt = i.quantity; return i; });
+        // this.createOrderModel
         let self = this;
         setTimeout(() => {
             // $('#products').val(['while', 'erere']);
@@ -173,7 +201,8 @@ prNames;
     order.date = Date.now();
     order.orderSum = 0;
     order.orderId = this.totalOrders;
-    order.products = $('#products').val();
+
+    delete order.component;
 
     // save to firebase
     this.orders.push(order);
@@ -183,26 +212,55 @@ prNames;
 
     // reset form
     form.resetForm();
-    $('#payMeth').val([]);
-    this.createOrderModel = new Order();
+    // $('#payMeth').val([]);
+    this.createOrderModel = new Order(this);
   }
 
   onRead(id) {
-    this.db.object(`orders/${id}`).subscribe(snapshots => {
-      this.editOrderModel = snapshots;
-      console.log(snapshots);
-      
-      setTimeout(() => {
-        console.log(snapshots.priceMethod);
-        // $('#payMeth').val(null);
-          $('#payMeth').chosen();
-          $('#payMeth').val(snapshots.priceMethod);
-          $('#payMeth').trigger('chosen:updated');
-          $('#payMeth').on('change', (e) => {
-            console.log($('#payMeth').val());
-          });
+    this.db.object(`orders/${id}`).subscribe((snapshots: Order) => {
+      this.editOrderModel = new Order(this);
+      for (var key in snapshots) {
+        if (snapshots.hasOwnProperty(key)) {
+          var element = snapshots[key];
+          this.editOrderModel[key] = element;
         }
-      , 200);
+      }
+      this.editOrderModel.$key = snapshots.$key;
+      // this.editOrderModel = snapshots as Order;
+
+      // if (this.editOrderModel instanceof Order) {
+      //   console.log("myObject *is* an instance of Type!");
+      // } else {
+      //   console.log("Oops! myObject is not an instance of Type...");
+      // }
+      // console.log(typeof Order);
+      // console.log(typeof snapshots);
+
+      this.db.list('products').subscribe(
+        products => {
+          const prNames = products.map(e => e.name);
+          console.log(prNames);
+          const shNamse = this.editOrderModel.shopCart.map(e => e.name);
+          console.log(shNamse);
+
+          this.editOrderModel.availableProducts = products
+          .filter(i => shNamse.indexOf(i.name)==-1)
+          .map(i => {i.bayQt = i.quantity; return i; });
+          console.log(this.editOrderModel);
+
+          setTimeout(() => {
+            console.log(snapshots.priceMethod);
+            // $('#payMeth').val(null);
+              $('#payMeth').chosen();
+              $('#payMeth').val(snapshots.priceMethod);
+              $('#payMeth').trigger('chosen:updated');
+              $('#payMeth').on('change', (e) => {
+                console.log($('#payMeth').val());
+              });
+            }
+          , 200);
+        }
+      );
     });
   }
 
@@ -219,15 +277,20 @@ prNames;
     this.db.list('products').subscribe(
       products => {
         // get summary price
-        let priceSumm = products
-        .filter(item => order.products.includes(item.name))
-        .reduce((acc, item) => acc += +item.price, 0);
-        console.log(`price summary : ${priceSumm}`);
+        // let priceSumm = products
+        // .filter(item => order.products.includes(item.name))
+        // .reduce((acc, item) => acc += +item.price, 0);
+        // console.log(`price summary : ${priceSumm}`);
 
-        order.orderSum = +this.editOrderModel.quantity * priceSumm;
+        // order.orderSum = +this.editOrderModel.quantity * priceSumm;
 
         // firebase save
-        this.orders.update(order.$key, order);
+        const key = order.$key;
+        delete order.$key;
+        delete order.component;
+
+        this.orders.update(key, order);
+        // to do update products quantity
 
         // close modal
         $('#edit-form').modal('toggle');
@@ -235,13 +298,13 @@ prNames;
         // reset form
         // form.resetForm();
         $('#payMeth').val([]);
-        this.editOrderModel = new Order();
+        this.editOrderModel = new Order(this);
       }
     );
   }
 
-  onChangeProduct(event){
+  onChangeProduct(event) {
     console.log(event);
-    
+
   }
 }

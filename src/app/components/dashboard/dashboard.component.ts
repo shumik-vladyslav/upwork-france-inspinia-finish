@@ -239,7 +239,6 @@ barWidth;
 
   prepareDatasetForChartOrders(orders: List<Order>, roundDataFunction){
     let result = orders.GroupBy(order => roundDataFunction(order.date),  o => 1);
-    console.log(result);
     
         let data = [];
         for (let key in result) {
@@ -280,7 +279,6 @@ barWidth;
     this.barWidth= 12 * 60 * 60 * 1000;
     const date = new Date();
     let currentMonth =  new Date(date.getFullYear(), date.getMonth());
-    console.log(currentMonth);
 
     this.flotOptionsTemplate.xaxis.tickSize = [1, 'day'];
     this.flotOptions= this.flotOptionsTemplate;
@@ -304,7 +302,6 @@ barWidth;
     this.barWidth= 30 * 60 * 1000;
     const date = new Date();
     let currentDay =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
-    console.log(currentDay);
 
     this.flotOptionsTemplate.xaxis.tickSize = [3, 'hour'];
     this.flotOptions= this.flotOptionsTemplate;
@@ -327,8 +324,6 @@ barWidth;
         // });
         let income = this.prepareDatasetForChartIncome(orders,this.getHoursOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
-        console.log(income);
-        console.log(letOrdersData);
         // this.flotOptions.yaxes[0].max = 70;
         // this.flotOptions.yaxes[1].max = 100;
 

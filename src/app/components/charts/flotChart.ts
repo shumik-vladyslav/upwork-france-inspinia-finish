@@ -60,7 +60,7 @@ export class FlotChartDirective implements OnDestroy, OnChanges, OnInit {
         this.updateChartDataAndGrid(changes['dataset'].currentValue,null);
         this.dataset = changes['dataset'].currentValue;
       } else if (changes.hasOwnProperty('options')) {
-        console.log('options changes');
+
         this.options = changes['options'].currentValue;
         this.updateChartDataAndGrid(null,null);
         // Otherwise rebuild the chart

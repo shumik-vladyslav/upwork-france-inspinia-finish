@@ -21,9 +21,12 @@ export class PaymentComponent implements OnInit {
   otherSwitch = false;
   otherPriceMethod = '';
 
+  seccessSave = false;
+  errorSave = false;
+  errorMessage = '';
+
   ngOnInit(): void {
       this.firebaseUserKey =  JSON.parse(Cookie.getAll()['User']).firebaseKey;
-      console.log(`user from cookies: ${JSON.stringify(this.firebaseUserKey)}`);
 
       // initialize checkboxes array
       for (let x = 0; x < this.options.length; x++) {
@@ -32,8 +35,20 @@ export class PaymentComponent implements OnInit {
 
       this.db.object(`users/${this.firebaseUserKey}`).subscribe(
         user => {
+          if ( user.availPriceMeth ) {
+            this.options = [];
+            for (let x = 0; x < user.availPriceMeth.length; x++) {
+              this.options.push(user.availPriceMeth[x]);
+              this.optionsMap[user.availPriceMeth[x]] = false;
+            }
+          } else {
+             console.log('us havnt ');
+            for (let x = 0; x < this.options.length; x++) {
+              this.optionsMap[this.options[x]] = false;
+            }
+          }
           if (!user.priceMethod) {return; }
-          user.priceMethod.forEach(element => {
+            user.priceMethod.forEach(element => {
             this.optionsMap[element] = true;
           });
           if (user.otherPriceMethod && user.otherPriceMethod !== '') {
@@ -58,22 +73,31 @@ export class PaymentComponent implements OnInit {
     }
 
   onSave() {
-    const keys = Object.keys(this.optionsMap)
+    const keys = Object.keys(this.optionsMap);
     // console.log(keys);
 
-    const fieldsForUpdate = {priceMethod: keys.filter((key) => this.optionsMap[key])};
+    const fieldsForUpdate = {
+      availPriceMeth: keys,
+      priceMethod: keys.filter((key) => this.optionsMap[key])
+    };
+    // if (this.otherSwitch) {
+    //   fieldsForUpdate['otherPriceMethod'] = this.otherPriceMethod;
+    // } else {
+    //   fieldsForUpdate['otherPriceMethod'] = '';
+    // }
 
-    if (this.otherSwitch) {
-      fieldsForUpdate['otherPriceMethod'] = this.otherPriceMethod;
-    } else {
-      fieldsForUpdate['otherPriceMethod'] = '';
-    }
-
-    this.db.list('users').update(this.firebaseUserKey, fieldsForUpdate);
+    this.db.list('users').update(this.firebaseUserKey, fieldsForUpdate)
+    .then(() => this.seccessSave = true)
+    .catch(e => {this.errorSave = true; this.errorMessage = e.message });
   }
 
   updateCheckedOptions(option, event) {
    this.optionsMap[option] = event.target.checked;
-   console.log(this.optionsMap);
+  }
+
+  onAddOtherClick() {
+    this.options.push(this.otherPriceMethod);
+    this.optionsMap[this.otherPriceMethod] = true;
+    this.otherPriceMethod = '';
   }
 }

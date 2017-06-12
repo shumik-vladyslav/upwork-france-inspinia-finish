@@ -30,7 +30,7 @@ export class UserService {
     if(userCookie) {
       return JSON.parse(Cookie.getAll()['User'])
     } else {
-      console.log("Вы вошли как гость!");
+      console.log("You sign in as guest.");
       return true;
     }
   }

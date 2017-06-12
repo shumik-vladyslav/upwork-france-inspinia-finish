@@ -22,11 +22,11 @@ export class TopNavbarComponent {
   }
 
   logout() {
-    this.afAuth.auth.signOut();
-    console.log("Пользователь вышел!")
     this.router.navigate([ '/login' ]);
+    this.afAuth.auth.signOut();
     Cookie.set("User", null);
   }
+
   login() {
     this.router.navigate([ '/login' ]);
   }

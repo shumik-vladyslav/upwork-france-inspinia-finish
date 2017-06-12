@@ -12,9 +12,6 @@ export class ApplyChosenPipe implements PipeTransform {
             return items;
         }
         // filter items array, items which match and return true will be kept, false will be filtered out
-        console.log("sddf" + filter.toString());
-        console.log(JSON.stringify(filter));
-        console.log(JSON.stringify(items));
         return items;
     }
 }

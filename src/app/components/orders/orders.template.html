@@ -49,22 +49,14 @@
                     <!--end validation namr block-->
                   </div>
                 </div>
+                <!--start shoping cart-->
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label class="control-label" for="products">Product</label>
-                    <select required id="products1" name="products" class="form-control" 
-                    (change)="createOrderModel.shopCart.push(productsNames[$event.target.options.selectedIndex]);
-                    productsNames.splice($event.target.options.selectedIndex,1)" 
-                    placeholder="Product" #products [(ngModel)]="selectedProducts">
-                            <option data="i" *ngFor="let product of productsNames;let i=index" value="{{product.name}}">{{product.name}}</option>
+                    <label class="control-label" for="products">Products</label>
+                    <select id="products1" name="products" class="form-control" [(ngModel)]="slctdPrdcts" (change)="createOrderModel.moveToShopCart($event.target.options.selectedIndex);slctdPrdcts=[]"
+                      placeholder="Product">
+                            <option data="i" *ngFor="let product of createOrderModel.availableProducts;let i=index" value="{{product.name}}">{{product.name}}</option>
                     </select>
-                    <!--validation name block-->
-                    <!--<div *ngIf="products.errors && (products.dirty || products.touched)" class="alert alert-danger">
-                      <div [hidden]="!products.errors.required">
-                        Products list canot be empty.
-                      </div>
-                    </div>-->
-                    <!--end validation namr block-->
                   </div>
                 </div>
                 <div class="col-sm-12">
@@ -79,13 +71,14 @@
                             {{item.price}}
                           </td>
                           <td>
-                            <input type="number" min="1" max="{{item.quantity}}" [(ngModel)]="item.bayQt" value="{{item.quantity}}" name="shopCartQt" />
+                            <input type="number" min="1" max="{{item.quantity}}" [(ngModel)]="createOrderModel.shopCart[i].bayQt" (change)="createOrderModel.recalcOrderSum()"
+                              name="qt{{i}}" />
                           </td>
                           <td>
-                            {{item.quantity * item.price}}
+                            {{createOrderModel.shopCart[i].bayQt * item.price}}
                           </td>
                           <td class="text-right">
-                            <button type="button" (click)="productsNames.push(item);createOrderModel.shopCart.splice(i, 1);" class="btn btn-danger">Delete</button>
+                            <button type="button" (click)="createOrderModel.moveToAvail(i);" class="btn btn-danger">Delete</button>
                           </td>
                         </tr>
                       </tbody>
@@ -95,13 +88,14 @@
                             <h4> Total: </h4>
                           </td>
                           <td class="text-right">
-                            <h4> {{createOrderModel.shopCart | sum:'price':'bayQt' }} </h4>
+                            <h4> {{createOrderModel.orderSum}} </h4>
                           </td>
                         </tr>
                       </tfoot>
                     </table>
                   </div>
                 </div>
+                <!--end shoping cart-->
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label class="control-label" for="paid">Price paid/unpaid</label>
@@ -128,9 +122,6 @@
                                {{createOrderForm.invalid}}<br>-->
                     <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts || createOrderForm.invalid">Create order</button>
                   </div>
-                  <!--<div *ngIf="invalidProducts" class="alert alert-danger">
-                               opopo
-                           </div>-->
                 </div>
               </div>
             </form>
@@ -160,33 +151,50 @@
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label class="control-label">Products</label>
-                    <input id="eproducts" disabled [(ngModel)]="editOrderModel.products" name="products" type="text" class="form-control" placeholder="Products">
+                    <label class="control-label" for="products">Products</label>
+                    <select id="products1" name="products" class="form-control" [(ngModel)]="slctdPrdcts" (change)="editOrderModel.moveToShopCart($event.target.options.selectedIndex);slctdPrdcts=[]"
+                      placeholder="Product">
+                            <option data="i" *ngFor="let product of editOrderModel.availableProducts;let i=index" value="{{product.name}}">{{product.name}}</option>
+                    </select>
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <label class="control-label">Quantity</label>
-                    <input required #quantity="ngModel" [(ngModel)]="editOrderModel.quantity" name="quantity" type="text" class="form-control"
-                      equired minlength="1" maxlength="4" pattern="^[0-9]+$" placeholder="Quantity">
-                    <!--validation block-->
-                    <div *ngIf="quantity.errors && (quantity.dirty || quantity.touched)" class="alert alert-danger">
-                      <div [hidden]="!quantity.errors.required">
-                        Quantity is required
-                      </div>
-                      <div [hidden]="!quantity.errors.minlength">
-                        Quantity must be at least 1 characters long.
-                      </div>
-                      <div [hidden]="!quantity.errors.maxlength">
-                        Quantity cannot be more than 4 characters long.
-                      </div>
-                      <div [hidden]="!quantity.errors.pattern">
-                        Quantity must be number
-                      </div>
-                    </div>
-                    <!--end validation namr block-->
+                    <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+                      <tbody>
+                        <tr *ngFor="let item of editOrderModel.shopCart; let i=index">
+                          <td>
+                            {{item.name}}
+                          </td>
+                          <td>
+                            {{item.price}}
+                          </td>
+                          <td>
+                            <input type="number" min="1" max="{{item.quantity}}" [(ngModel)]="editOrderModel.shopCart[i].bayQt" (change)="editOrderModel.recalcOrderSum()"
+                              name="qt{{i}}" />
+                          </td>
+                          <td>
+                            {{editOrderModel.shopCart[i].bayQt * item.price}}
+                          </td>
+                          <td class="text-right">
+                            <button type="button" (click)="editOrderModel.moveToAvail(i);" class="btn btn-danger">Delete</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="4">
+                            <h4> Total: </h4>
+                          </td>
+                          <td class="text-right">
+                            <h4> {{editOrderModel.orderSum}} </h4>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
                 </div>
+                <!--end shoping cart-->
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label class="control-label">Price paid/unpaid</label>
@@ -232,7 +240,7 @@
                            </div>-->
                 <div class="col-sm-12">
                   <div class="form-group">
-                    <button type="button" (click)="onUpdate(updateOrderForm)" class="btn btn-success" [disabled]="updateOrderForm.invalid">Save</button>
+                    <button type="button" (click)="onUpdate(updateOrderForm)" class="btn btn-success" [disabled]="invalidProducts || updateOrderForm.invalid">Save</button>
                   </div>
                 </div>
               </fieldset>

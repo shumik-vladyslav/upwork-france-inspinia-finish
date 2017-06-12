@@ -32,6 +32,10 @@ export class ProfilComponent implements OnInit {
 
   userId;
 
+  seccessSave = false;
+  errorSave = false;
+  errorMessage = '';
+
   /** URL for upload server images */
   @Input() hostUpload: string;
 
@@ -51,7 +55,6 @@ export class ProfilComponent implements OnInit {
 
   ngOnInit() {
     this.id = this.route.snapshot.params['id'];
-    console.log(`this.id ${this.id}`);
     this.users = this.db.list('/users');
     this.user =  this.db.list('/users').subscribe(users => {
 
@@ -59,7 +62,6 @@ export class ProfilComponent implements OnInit {
       users.forEach(snapshot => {
 
         if(snapshot.email == userId.email) {
-          console.log(snapshot.name);
 
           this.id = snapshot.$key;
           this.name = snapshot.name;
@@ -75,7 +77,6 @@ export class ProfilComponent implements OnInit {
     });
 
     this.obj = this.userService.getUser();
-    console.log(this.obj.email);
   }
 
 
@@ -90,12 +91,13 @@ export class ProfilComponent implements OnInit {
     }
 
 
-    this.users.update(this.id, user);
-    this.router.navigate(['/preferences/profil']);
+    this.users.update(this.id, user)
+    .then(() => this.seccessSave = true)
+    .catch(e => {this.errorSave = true; this.errorMessage = e.message });
 
-    Cookie.set("User", JSON.stringify({
-      name: this.name,
-    }));
+    let userId = JSON.parse(Cookie.getAll()['User']);
+    userId.name = this.name;
+    Cookie.set('User', JSON.stringify(userId));
   }
 
 }

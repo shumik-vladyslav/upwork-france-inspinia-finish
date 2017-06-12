@@ -28,7 +28,6 @@ export class LoginUserComponent implements OnInit {
 
   onSubmit(formData) {
     if (!formData.valid) {
-      console.log('Invalid form data');
       return;
     }
 
@@ -40,7 +39,6 @@ export class LoginUserComponent implements OnInit {
         this.users.subscribe(data => {
           const fUser = data.filter(user => user.email.toLowerCase() == email.toLowerCase() )[0];
           if (!fUser) {
-            console.log('Error user not found in firebase');
             this.loginError = true;
             this.errorMessage = 'User not found in firebase';
             this.logout();
@@ -64,7 +62,6 @@ export class LoginUserComponent implements OnInit {
 
       }).catch(
       (err) => {
-        console.log(err);
         this.error = err;
         this.loginError = true;
         this.errorMessage = err.message;

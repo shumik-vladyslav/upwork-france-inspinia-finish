@@ -99,7 +99,6 @@ export class EditClientComponent implements OnInit {
 
     //this.model.data = this.data;
     //console.log(this.model.data,44);
-    console.log(markupStrIn,44);
     this.clients.update(this.id, client);
     this.router.navigate(['/clients']);
   }

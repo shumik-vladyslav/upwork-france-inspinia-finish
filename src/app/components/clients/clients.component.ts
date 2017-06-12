@@ -61,14 +61,11 @@ export class ClientsComponent {
     this.clientsOrders = db.list('/orders');
 
     this.clientsOrders.subscribe(queriedItems => {
-      console.log('clientsOrders');
-      console.log(queriedItems);
       this.clientsOrdersValue = queriedItems;
     });
   }
 
   onOrdersHistory(clientName: string) {
-    console.log(`onOrdersHistory client:${clientName}`);
     this.filterOrdersSubject.next(clientName);
   }
 
@@ -79,15 +76,12 @@ export class ClientsComponent {
   }
 
   onRowClick(i, client) {
-    console.log(`index =${i}`);
-    console.log(JSON.stringify(client));
     this.selectedClient = client;
     this.selectedRowIdx = i;
     this.filteredOrders = this.clientsOrdersValue.filter(order => order.clientName == client.name);
   }
 
   onCreate(form: NgForm) {
-    console.log('onCreate');
     const client = this.crClientModel;
 
     // prepare order object for saving
@@ -117,7 +111,6 @@ export class ClientsComponent {
   }
 
   onUpdate(form: NgForm) {
-    console.log('onUpdate');
     const client = this.edClientModel;
 
     // prepare order object for saving

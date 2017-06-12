@@ -39,21 +39,18 @@ export class NavigationComponent implements OnInit {
 
   logout() {
     this.afAuth.auth.signOut();
-    console.log("Пользователь вышел!")
     this.router.navigate([ '/login' ]);
     Cookie.set("User", null);
   }
 
   getUserCookie(){
     this.user =  JSON.parse(Cookie.getAll()['User']);
-    console.log(this.user,888);
     if(this.user == null) {
       this.user = {
         name: "Guest"
       };
       this.router.navigate([ '/dashboards/main-view' ]);
     }
-    console.log(this.user,777);
   }
 
 }

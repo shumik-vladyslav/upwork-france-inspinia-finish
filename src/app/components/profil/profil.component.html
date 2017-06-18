@@ -32,6 +32,9 @@
                       {{errorMessage}}
                     </div>
                   </div>
+                  <div class="form-group"><label class="col-sm-2 control-label">Store name:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="storeName" name="storeName" type="text" class="form-control" placeholder="Store name"></div>
+                  </div>
                   <div class="form-group"><label class="col-sm-2 control-label">User Name:</label>
                     <div class="col-sm-10"><input type="text" [(ngModel)]="name" name="name" class="form-control" placeholder="User Name"></div>
                   </div>
@@ -39,19 +42,23 @@
                     <div class="col-sm-10"><input [(ngModel)]="email" name="email" type="text" class="form-control" placeholder="Email"></div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Password:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="password" name="password" type="text" class="form-control" placeholder="Password"></div>
-                  </div>
-                  <div class="form-group"><label class="col-sm-2 control-label">Store name:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="storeName" name="storeName" type="text" class="form-control" placeholder="Store name"></div>
+                    <div class="col-sm-10">
+                      <button *ngIf="!hiddPW" type="button" (click)="this.hiddPW = true" class="btn btn-success btn-block"> Change password</button>
+                      <input *ngIf="hiddPW" [(ngModel)]="password" name="password" type="text" class="form-control" placeholder="Password">
+                    </div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Address:</label>
                     <div class="col-sm-10"><input [(ngModel)]="address" name="address" type="text" class="form-control" placeholder="Address"></div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Country:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="country" name="country" type="text" class="form-control" placeholder="Country"></div>
+                    <div class="col-sm-10"><select required [(ngModel)]="country" name="country-dr-down" class="form-control">
+                      <option selected="selected" disabled>Country...</option>
+                      <option *ngFor="let c of countries" [ngValue]="c.id">{{ c.name }}</option>
+                    </select>
+                    </div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">User status:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="status" name="status" type="text" class="form-control" placeholder="User status"></div>
+                    <div class="col-sm-10"><input disabled ="status" name="status" type="text" class="form-control" placeholder="User status" value="free plan"></div>
                   </div>
                   <div class="col-sm-12">
                     <div class="form-group">

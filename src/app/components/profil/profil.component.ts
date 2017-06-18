@@ -3,11 +3,11 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import { Observable } from 'rxjs/Rx';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Ng2Summernote } from 'ng2-summernote/ng2-summernote';
 import { Cookie } from 'ng2-cookies';
 import { UserService } from "../shared/user.service";
-
+import { CountriesCatalog } from './countries';
 @Component({
   selector: 'preferences',
   templateUrl: './profil.component.html',
@@ -36,6 +36,12 @@ export class ProfilComponent implements OnInit {
   errorSave = false;
   errorMessage = '';
 
+  // counties dropdown
+  countries = CountriesCatalog;
+
+  //hidden password flag
+  hiddPW = false;
+
   /** URL for upload server images */
   @Input() hostUpload: string;
 
@@ -54,6 +60,7 @@ export class ProfilComponent implements OnInit {
   }
 
   ngOnInit() {
+    // this.hiddPW = true;
     this.id = this.route.snapshot.params['id'];
     this.users = this.db.list('/users');
     this.user =  this.db.list('/users').subscribe(users => {
@@ -99,5 +106,7 @@ export class ProfilComponent implements OnInit {
     userId.name = this.name;
     Cookie.set('User', JSON.stringify(userId));
   }
-
+  onChangePW() {
+    
+  }
 }

@@ -15,8 +15,9 @@ export class SignupComponent implements OnInit {
   error: any;
 
   users;
-  signUpError;
-  errorMessage;
+  signUpError =false;
+  success = false;
+  alertMessage;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, private router: Router) {
     this.users = db.list('/users');
@@ -28,18 +29,26 @@ export class SignupComponent implements OnInit {
       let email= formData.value.email;
       let password =  formData.value.password;
       this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(
-        (success) => {
+        (success: firebase.User) => {
           this.users.push({
             name: name,
             email: email,
             password: password,
           });
+          success.sendEmailVerification()
+          .then( ()=>
+            console.log('email sendet')
+
+            // () => {this.success = true}
+          ).catch(
+            () => console.log('erroremail sendet')
+          );
           console.log("User is created.");
           this.router.navigate(['/dashboards/main-view']);
         }).catch(
         (err) => {
           this.signUpError = true;
-          this.errorMessage = err;
+          this.alertMessage = err;
           this.error = err;
         });
     }

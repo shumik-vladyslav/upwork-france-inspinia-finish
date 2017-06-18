@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import {AngularFireDatabase} from 'angularfire2/database';
 import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
-import { UserService } from "../shared/user.service";
+import { UserService } from '../shared/user.service';
 
 @Component({
   selector: 'app-email',
@@ -23,7 +23,6 @@ export class LoginUserComponent implements OnInit {
   constructor(public afAuth: AngularFireAuth, private db: AngularFireDatabase,
    private router: Router, private userService: UserService) {
     this.user = afAuth.authState;
-    this.users = db.list('/users');
   }
 
   onSubmit(formData) {
@@ -33,10 +32,32 @@ export class LoginUserComponent implements OnInit {
 
     let email = formData.value.email;
     let password = formData.value.password;
+    let remember = formData.value.remember;
+
+    console.log('remember' + remember);
+
+    this.afAuth.auth.onAuthStateChanged(
+      (user) => console.log(`auth state change ${JSON.stringify(user)}`)
+    );
 
     this.afAuth.auth.signInWithEmailAndPassword( email , password).then(
-      (success) => {
-        this.users.subscribe(data => {
+      (success: firebase.User) => {
+        // if (!success.emailVerified) {
+        //   this.error = true;
+        //   this.errorMessage = 'Please approve your email address.';
+        //   this.afAuth.auth.signOut();
+        //   return;
+        // }
+
+        console.log('cuu fire user', JSON.stringify(success));
+
+        if ( remember ) {
+          localStorage.setItem('remember', 'true');
+        }
+
+        localStorage.setItem('currFireUser', JSON.stringify(success));
+
+        this.db.list('/users').subscribe(data => {
           const fUser = data.filter(user => user.email.toLowerCase() == email.toLowerCase() )[0];
           if (!fUser) {
             this.loginError = true;
@@ -73,6 +94,7 @@ export class LoginUserComponent implements OnInit {
     console.log('logout');
     this.afAuth.auth.signOut();
     Cookie.set('User', null);
+    localStorage.removeItem('remember');
     this.router.navigate([ '/login' ]);
   }
 

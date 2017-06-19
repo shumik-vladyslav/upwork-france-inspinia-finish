@@ -4,6 +4,7 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { Router, ActivatedRoute, Params} from '@angular/router';
 import { NgForm, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Cookie } from 'ng2-cookies';
+import { AuthGuard } from '../auth.service';
 
 declare var jQuery: any;
 declare var $: any;
@@ -104,7 +105,10 @@ export class OrdersComponent implements OnInit {
   selectedPriceMethos;
   selectedOrderId;
 
-  constructor(public db: AngularFireDatabase, private router: Router, private route : ActivatedRoute) {
+  constructor(public db: AngularFireDatabase,
+   private router: Router,
+    private route: ActivatedRoute,
+    private authServ: AuthGuard) {
     this.orders = db.list('/orders');
     this.clients = db.list('/clients');
     this.productsFrbsCollection = db.list('/products');
@@ -122,8 +126,8 @@ export class OrdersComponent implements OnInit {
       }
     );
     this.invalidProducts = true;
-    this.firebaseUserKey =  JSON.parse(Cookie.getAll()['User']).firebaseKey;
-    this.db.object(`users/${this.firebaseUserKey}`).subscribe(
+
+    this.authServ.fetchUserSettings().subscribe(
         user => {
           if (!user.priceMethod) {return; }
           this.priceMethods = user.priceMethod.map(item => {return {label: item, value:item};});

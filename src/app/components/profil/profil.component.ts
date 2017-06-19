@@ -68,7 +68,7 @@ export class ProfilComponent implements OnInit {
       let userId = JSON.parse(Cookie.getAll()['User']);
       users.forEach(snapshot => {
 
-        if(snapshot.email == userId.email) {
+        if (snapshot.email == userId.email) {
 
           this.id = snapshot.$key;
           this.name = snapshot.name;
@@ -87,7 +87,7 @@ export class ProfilComponent implements OnInit {
   }
 
 
-  onEditSubmit(){
+  onEditSubmit() {
     let user = {
       name: this.name,
       //phone: this.phone,
@@ -97,7 +97,6 @@ export class ProfilComponent implements OnInit {
       //country: this.country,
     }
 
-
     this.users.update(this.id, user)
     .then(() => this.seccessSave = true)
     .catch(e => {this.errorSave = true; this.errorMessage = e.message });
@@ -106,7 +105,8 @@ export class ProfilComponent implements OnInit {
     userId.name = this.name;
     Cookie.set('User', JSON.stringify(userId));
   }
+
   onChangePW() {
-    
+
   }
 }

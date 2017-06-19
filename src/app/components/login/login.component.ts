@@ -42,12 +42,13 @@ export class LoginUserComponent implements OnInit {
 
     this.afAuth.auth.signInWithEmailAndPassword( email , password).then(
       (success: firebase.User) => {
-        // if (!success.emailVerified) {
-        //   this.error = true;
-        //   this.errorMessage = 'Please approve your email address.';
-        //   this.afAuth.auth.signOut();
-        //   return;
-        // }
+        if (!success.emailVerified) {
+          // this.error = true;
+          // this.errorMessage = 'Please approve your email address.';
+          this.router.navigate(['confemail']);
+          this.afAuth.auth.signOut();
+          return;
+        }
 
         console.log('cuu fire user', JSON.stringify(success));
 

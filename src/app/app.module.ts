@@ -42,12 +42,15 @@ import { LikePipe } from './pipes/LikePipe';
 import { SumPipe } from './pipes/SumPipe';
 import { ApplyChosenPipe } from './pipes/ApplyChosenPipe';
 
+import { UiSwitchModule } from 'ng2-ui-switch';
+
 // App views
 import {DashboardsModule} from "./views/dashboards/dashboards.module";
 import {AppviewsModule} from "./views/appviews/appviews.module";
 
 // App modules/components
 import {LayoutsModule} from "./components/common/layouts/layouts.module";
+import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -87,7 +90,8 @@ export const firebaseConfig = {
     MessagesComponent,
     LikePipe,
     SumPipe,
-    ApplyChosenPipe
+    ApplyChosenPipe,
+    ConfirmEmailComponent
   ],
   imports: [
     BrowserModule,
@@ -97,13 +101,14 @@ export const firebaseConfig = {
     DashboardsModule,
     LayoutsModule,
     AppviewsModule,
-    ChartsModule, FlotModule,IboxtoolsModule,PeityModule,SparklineModule,JVectorMapModule,
+    ChartsModule, FlotModule, IboxtoolsModule, PeityModule, SparklineModule, JVectorMapModule,
     RouterModule.forRoot(ROUTES),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
     AngularFireDatabaseModule,
+    UiSwitchModule,
   ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},UserService,AuthGuard],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, UserService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

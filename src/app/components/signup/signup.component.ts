@@ -29,22 +29,22 @@ export class SignupComponent implements OnInit {
       let email= formData.value.email;
       let password =  formData.value.password;
       this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(
-        (success: firebase.User) => {
-          this.users.push({
+        (authUser: firebase.User) => {
+          this.db.list('users').update(authUser.uid,{
             name: name,
             email: email,
-            password: password,
           });
-          success.sendEmailVerification()
-          .then( ()=>
-            console.log('email sendet')
-
-            // () => {this.success = true}
+          authUser.sendEmailVerification()
+          .then( () =>{
+            this.router.navigate(['confemail']);
+            console.log('email sendet');
+            return;
+          }
           ).catch(
             () => console.log('erroremail sendet')
           );
-          console.log("User is created.");
-          this.router.navigate(['/dashboards/main-view']);
+          // console.log("User is created.");
+          // this.router.navigate(['/dashboards/main-view']);
         }).catch(
         (err) => {
           this.signUpError = true;

@@ -26,6 +26,7 @@
         "../vendor/summernote/summernote.css",
         "../vendor/summernote/summernote-bs3.css",
         "../node_modules/chosen-js/chosen.css",
+        "../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css",
         "styles.scss"
       ],
       "scripts": [
@@ -39,7 +40,8 @@
         "../vendor/summernote/summernote.min.js",
         "../vendor/slimscroll/jquery.slimscroll.min.js",
         "../node_modules/chosen-js/chosen.jquery.js",
-        "../vendor/footable/footable.all.min.js"
+        "../vendor/footable/footable.all.min.js",
+        "../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

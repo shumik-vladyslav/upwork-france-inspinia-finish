@@ -29,7 +29,8 @@ import { ProjectsComponent } from "./components/projects/projects.component";
 import { ProfilComponent } from "./components/profil/profil.component";
 import { PaymentComponent } from "./components/payment/payment.component";
 import { MessagesComponent } from "./components/messages/messages.component";
-import {AuthGuard} from "./components/auth.service";
+import { AuthGuard } from "./components/auth.service";
+import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
 
 export const ROUTES:Routes = [
   // Main redirect
@@ -74,7 +75,6 @@ export const ROUTES:Routes = [
       {path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},
       {path: 'orders/:id', component: OrdersComponent, canActivate: [AuthGuard]},
       // {path: 'orders/:id', component: EditOrderComponent, canActivate: [AuthGuard]},
-      
       {path: 'preferences', component: PreferencesComponent, canActivate: [AuthGuard]},
       {path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard]},
     ]
@@ -84,6 +84,7 @@ export const ROUTES:Routes = [
     children: [
       { path: 'login', component: LoginUserComponent },
       { path: 'register', component: SignupComponent },
+      { path: 'confemail', component : ConfirmEmailComponent}
     ]
   },
 

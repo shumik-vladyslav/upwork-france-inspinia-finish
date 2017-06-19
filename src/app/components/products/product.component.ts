@@ -39,7 +39,7 @@ export class ProductsComponent implements OnInit {
 
   createModel = new Product();
   editModel = new Product();
-
+  isEditMode = false;
   products: FirebaseListObservable<any[]>;
   searchProduct;
   // list of categories
@@ -56,7 +56,7 @@ export class ProductsComponent implements OnInit {
   public ngOnInit(): any {
     // const self = this;
     footable();
-    
+    $('#tags').tagsinput('items');
     // fetch categories
     this.authServ.fetchUserSettings().subscribe(
       st => {
@@ -65,22 +65,21 @@ export class ProductsComponent implements OnInit {
           }
         }
     );
-    // $('#tags').on('itemAdded', function(event) {
-    //   self.createModel.tags.push(event.item);
-    // });
-
-    // $('#tags').on('itemRemoved', function(event) {
-    //   const pos = self.createModel.tags.indexOf(event.item);
-    //   self.createModel.tags.splice(pos, 1);
-    // });
-
   }
 
   onCreate(form: NgForm) {
     console.log(this.createModel);
     this.createModel.tags = $('#tags').tagsinput('items');
-    // firebase create
-    this.products.push(this.createModel);
+
+    // firebase
+    if ( this.isEditMode ) {
+      // update
+      this.products.update(this.createModel.$key, this.createModel);
+      this.isEditMode = false;
+    } else {
+      // create
+      this.products.push(this.createModel);
+    }
 
     // close modal
     $('#create-form').modal('toggle');
@@ -91,22 +90,20 @@ export class ProductsComponent implements OnInit {
   }
 
   onGet(firebaseId) {
+    $('#tags').tagsinput('removeAll');
     this.db.object(`products/${firebaseId}`).subscribe(
-      product => this.editModel = product,
+      product => {
+        this.isEditMode = true;
+        this.createModel = product;
+
+        if (!product.tags) { return; }
+        product.tags.forEach(element => {
+          $('#tags').tagsinput('add', element.toString());
+        });
+        $('#tags').tagsinput('refresh');
+      },
       error => console.log(`Product fetch error: ${error.message}`)
     );
-  }
-
-  onUpdate(form: NgForm) {
-    // firebase update
-    this.products.update(this.editModel.$key, this.editModel);
-
-    // close modal
-    $('#edit-form').modal('toggle');
-
-    // reset form
-    form.resetForm();
-    this.editModel = new Product();
   }
 
   addCategory() {
@@ -120,10 +117,5 @@ export class ProductsComponent implements OnInit {
     this.createModel.category = '';
     // save to firebase
     this.authServ.updateUserSettings({categories: this.catList});
-  }
-
-  onChangeTags() {
-    console.log('onChangeTags()');
-    console.log(this.createModel.tags);
   }
 }

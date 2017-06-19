@@ -27,105 +27,122 @@
           <h4 class="modal-title">Create order</h4>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <form class="form-edit" #createOrderForm="ngForm">
-              <div class="row">
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <label class="control-label" for="clientName">Client Name</label>
-                    <select required [(ngModel)]="createOrderModel.clientName" name="clientName" id="clientName" class="form-control" #name="ngModel"
-                      placeholder="Client Name">
+          <form class="form-edit" #createOrderForm="ngForm">
+            <!--tabs header-->
+            <ul class="nav nav-tabs">
+              <li class="active"><a data-toggle="tab" href="#crordtabmain">Main</a></li>
+              <li><a data-toggle="tab" href="#crordtabpay">Payment</a></li>
+              <li><a data-toggle="tab" href="#crordtabstatus">Status</a></li>
+            </ul>
+            <!--end tabs header-->
+            <!--tabs content-->
+            <div class="tab-content">
+              <div id="crordtabmain" class="tab-pane fade in active">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label class="control-label" for="clientName">Client Name</label>
+                      <select required [(ngModel)]="createOrderModel.clientName" name="clientName" id="clientName" class="form-control" #name="ngModel"
+                        placeholder="Client Name">
                               <option *ngFor="let client of clients | async" value="{{client.name}}">{{client.name}}</option>
                               </select>
-                    <!--validation name block-->
-                    <div *ngIf="name.errors && (name.dirty || name.touched)" class="alert alert-danger">
-                      <div [hidden]="!name.errors.required">
-                        Client name is required
+                      <!--validation name block-->
+                      <div *ngIf="name.errors && (name.dirty || name.touched)" class="alert alert-danger">
+                        <div [hidden]="!name.errors.required">
+                          Client name is required
+                        </div>
+                        <div [hidden]="!name.errors.pattern">
+                          Name must contain leters and numbers only.
+                        </div>
                       </div>
-                      <div [hidden]="!name.errors.pattern">
-                        Name must contain leters and numbers only.
-                      </div>
+                      <!--end validation namr block-->
                     </div>
-                    <!--end validation namr block-->
                   </div>
-                </div>
-                <!--start shoping cart-->
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <label class="control-label" for="products">Products</label>
-                    <select id="products1" name="products" class="form-control" [(ngModel)]="slctdPrdcts" (change)="createOrderModel.moveToShopCart($event.target.options.selectedIndex);slctdPrdcts=[]"
-                      placeholder="Product">
+                  <!--start shoping cart-->
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label class="control-label" for="products">Products</label>
+                      <select id="products1" name="products" class="form-control" [(ngModel)]="slctdPrdcts" (change)="createOrderModel.moveToShopCart($event.target.options.selectedIndex);slctdPrdcts=[]"
+                        placeholder="Product">
                             <option data="i" *ngFor="let product of createOrderModel.availableProducts;let i=index" value="{{product.name}}">{{product.name}}</option>
                     </select>
+                    </div>
                   </div>
-                </div>
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
-                      <tbody>
-                        <tr *ngFor="let item of createOrderModel.shopCart; let i=index">
-                          <td>
-                            {{item.name}}
-                          </td>
-                          <td>
-                            {{item.price}}
-                          </td>
-                          <td>
-                            <input type="number" min="1" max="{{item.quantity}}" [(ngModel)]="createOrderModel.shopCart[i].bayQt" (change)="createOrderModel.recalcOrderSum()"
-                              name="qt{{i}}" />
-                          </td>
-                          <td>
-                            {{createOrderModel.shopCart[i].bayQt * item.price}}
-                          </td>
-                          <td class="text-right">
-                            <button type="button" (click)="createOrderModel.moveToAvail(i);" class="btn btn-danger">Delete</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <td colspan="4">
-                            <h4> Total: </h4>
-                          </td>
-                          <td class="text-right">
-                            <h4> {{createOrderModel.orderSum}} </h4>
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+                        <tbody>
+                          <tr *ngFor="let item of createOrderModel.shopCart; let i=index">
+                            <td>
+                              {{item.name}}
+                            </td>
+                            <td>
+                              {{item.price}}
+                            </td>
+                            <td>
+                              <input *ngIf="!item.isService" type="number" min="1" max="{{item.quantity}}" [(ngModel)]="createOrderModel.shopCart[i].bayQt" (change)="createOrderModel.recalcOrderSum()"
+                                name="qt{{i}}" />
+                            </td>
+                            <td>
+                              {{createOrderModel.shopCart[i].bayQt * item.price}}
+                            </td>
+                            <td class="text-right">
+                              <button type="button" (click)="createOrderModel.moveToAvail(i);" class="btn btn-danger">Delete</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <td colspan="4">
+                              <h4> Total: </h4>
+                            </td>
+                            <td class="text-right">
+                              <h4> {{createOrderModel.orderSum}} </h4>
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
                   </div>
+                  <!--end shoping cart-->
                 </div>
-                <!--end shoping cart-->
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <label class="control-label" for="paid">Price paid/unpaid</label>
-                    <select [(ngModel)]="createOrderModel.paid" name="paid" id="paid" class="form-control" placeholder="Price paid/unpaid">
+              </div>
+              <div id="crordtabpay" class="tab-pane fade">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label class="control-label" for="paid">Price paid/unpaid</label>
+                      <select [(ngModel)]="createOrderModel.paid" name="paid" id="paid" class="form-control" placeholder="Price paid/unpaid">
                               <option value="paid" >paid</option>
                               <option value="unpaid" selected>unpaid</option>
-                              </select>
-                  </div>
-                </div>
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <label class="control-label" for="status">Status</label>
-                    <select [(ngModel)]="createOrderModel.status" name="status" id="status" class="form-control" placeholder="Status" value="Pending">
-                              <option value="pending" selected>Pending</option>
-                              <option value="done">Done</option>
-                              </select>
-                  </div>
-                </div>
-                <div class="col-sm-12">
-                  <div class="form-group">
-                    <!--{{invalidProducts || createOrderForm.invalid}}<br>
-                               {{invalidProducts && createOrderForm.invalid}}<br>
-                               {{invalidProducts }}<br>
-                               {{createOrderForm.invalid}}<br>-->
-                    <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts || createOrderForm.invalid">Create order</button>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
-            </form>
-          </div>
+              <div id="crordtabstatus" class="tab-pane fade">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label class="control-label" for="status">Status</label>
+                      <select [(ngModel)]="createOrderModel.status" name="status" id="status" class="form-control" placeholder="Status" value="Pending">
+                        <option value="pending" selected>Pending</option>
+                        <option value="done">Done</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end tabs content-->
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <button type="button" (click)="onCreate(createOrderForm)" class="btn btn-success" [disabled]="invalidProducts || createOrderForm.invalid">Create order</button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

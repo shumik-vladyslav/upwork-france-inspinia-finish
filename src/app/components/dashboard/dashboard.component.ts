@@ -45,6 +45,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
   newClients;
   newClientsPercent;
 
+  stockAlertProducts;
 
   barWidth;
   flotOptionsTemplate = {
@@ -122,7 +123,13 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
     this.nav = document.querySelector('nav.navbar');
 
-    this.projects = db.list('/projects');
+    db.list('/products').subscribe(
+      products => {
+        console.log('products fetched');
+        this.stockAlertProducts = products.filter( p => !p.isService && (p.quantity < p.stockAlert));
+        console.log(JSON.stringify( this.stockAlertProducts));
+      }
+    );
 
     // todo visits save to user
     // this.visits = client.visits;
@@ -154,7 +161,6 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
       this.sumCurrentMonth = 0;
       this.sumLastMonth = 0;
-      ////
 
       let lastMonthIncome = 0;
       let lastMonthOrders = 0;

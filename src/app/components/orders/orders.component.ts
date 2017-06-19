@@ -32,7 +32,7 @@ export class Order {
       this.component = component;
       this.orderId = 0;
       this.clientName = '';
-      this.status = 'pending';
+      this.status = '';
       this.paid = 'unpaid';
       this.quantity = 0;
       this.priceMethod = [];
@@ -51,6 +51,13 @@ export class Order {
   moveToShopCart(i) {
     const pr = this.availableProducts[i];
     pr.bayQt = pr.quantity;
+    console.log('pr is not service');
+    console.log(JSON.stringify(pr));
+    if (pr.isService) {
+      console.log('pr.isServece');
+      pr.bayQt = 1;
+      pr.quantity = 1;
+    }
     this.shopCart.push(pr);
     this.availableProducts.splice(i, 1);
     this.recalcOrderSum();
@@ -230,15 +237,6 @@ export class OrdersComponent implements OnInit {
         }
       }
       this.editOrderModel.$key = snapshots.$key;
-      // this.editOrderModel = snapshots as Order;
-
-      // if (this.editOrderModel instanceof Order) {
-      //   console.log("myObject *is* an instance of Type!");
-      // } else {
-      //   console.log("Oops! myObject is not an instance of Type...");
-      // }
-      // console.log(typeof Order);
-      // console.log(typeof snapshots);
 
       this.db.list('products').subscribe(
         products => {
@@ -280,14 +278,6 @@ export class OrdersComponent implements OnInit {
     order.quantity = +this.editOrderModel.quantity;
     this.db.list('products').subscribe(
       products => {
-        // get summary price
-        // let priceSumm = products
-        // .filter(item => order.products.includes(item.name))
-        // .reduce((acc, item) => acc += +item.price, 0);
-        // console.log(`price summary : ${priceSumm}`);
-
-        // order.orderSum = +this.editOrderModel.quantity * priceSumm;
-
         // firebase save
         const key = order.$key;
         delete order.$key;

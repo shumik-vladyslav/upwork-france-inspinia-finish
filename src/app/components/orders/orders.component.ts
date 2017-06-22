@@ -116,11 +116,11 @@ export class OrdersComponent implements OnInit {
    private router: Router,
     private route: ActivatedRoute,
     private authServ: AuthGuard) {
-    this.orders = db.list('/orders');
-    this.clients = db.list('/clients');
-    this.productsFrbsCollection = db.list('/products');
+    this.orders = db.list(`/shops/${authServ.userId}/orders`);
+    this.clients = db.list(`/shops/${authServ.userId}/clients`);
+    this.productsFrbsCollection = db.list(`/shops/${authServ.userId}/products`);
 
-    this.db.list('/orders').subscribe(snapshots => {
+    this.db.list(`/shops/${authServ.userId}/orders`).subscribe(snapshots => {
 
       this.totalOrders = snapshots.length;
     });
@@ -228,7 +228,7 @@ export class OrdersComponent implements OnInit {
   }
 
   onRead(id) {
-    this.db.object(`orders/${id}`).subscribe((snapshots: Order) => {
+    this.db.object(`/shops/${this.authServ.userId}/orders/${id}`).subscribe((snapshots: Order) => {
       this.editOrderModel = new Order(this);
       for (var key in snapshots) {
         if (snapshots.hasOwnProperty(key)) {
@@ -238,7 +238,7 @@ export class OrdersComponent implements OnInit {
       }
       this.editOrderModel.$key = snapshots.$key;
 
-      this.db.list('products').subscribe(
+      this.db.list(`/shops/${this.authServ.userId}/products`).subscribe(
         products => {
           const prNames = products.map(e => e.name);
           console.log(prNames);
@@ -276,7 +276,7 @@ export class OrdersComponent implements OnInit {
     console.log(order.products);
     order.priceMethod = $('#payMeth').val();
     order.quantity = +this.editOrderModel.quantity;
-    this.db.list('products').subscribe(
+    this.db.list(`/shops/${this.authServ.userId}/products`).subscribe(
       products => {
         // firebase save
         const key = order.$key;

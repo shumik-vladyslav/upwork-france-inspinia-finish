@@ -50,7 +50,7 @@ export class ProductsComponent implements OnInit {
     private router: Router,
     public afAuth: AngularFireAuth,
     private authServ: AuthGuard) {
-    this.products = db.list('/products');
+    this.products = db.list(`/shops/${this.authServ.userId}/products`);
   }
 
   public ngOnInit(): any {
@@ -91,7 +91,7 @@ export class ProductsComponent implements OnInit {
 
   onGet(firebaseId) {
     $('#tags').tagsinput('removeAll');
-    this.db.object(`products/${firebaseId}`).subscribe(
+    this.db.object(`/shops/${this.authServ.userId}/products/${firebaseId}`).subscribe(
       product => {
         this.isEditMode = true;
         this.createModel = product;

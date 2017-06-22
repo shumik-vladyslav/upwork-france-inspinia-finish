@@ -1,4 +1,4 @@
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/do';
@@ -13,44 +13,83 @@ import { AngularFireDatabase } from 'angularfire2/database';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private userId = null;
-  private userSettings = null;
+  public userId = null;
+  public userInfo = null;
+  public userRole = null;
+
   constructor(
     private afAuth: AngularFireAuth,
     private db: AngularFireDatabase,
     private router: Router) {
-    this.afAuth.authState.subscribe(
-      (user: firebase.User) => {
-        if (user && user != null) {
-          // save user id
-          this.userId = user.uid;
 
-          // fetch user settings
-          
-          return;
-        }
-        this.userId = null;
-        this.userSettings = null;
+
+    this.afAuth.authState
+    .flatMap( user => {
+      this.userId = user.uid;
+      this.userInfo = user;
+      console.log(`1 userid: ${this.userId} role:${this.userRole}`);
+      return this.db.object(`/roles/${this.userId}`);
+    })
+    .subscribe(
+      role => {
+        this.userRole = role.role;
+        console.log(`2 userid: ${this.userId} role:${this.userRole}`);
       }
     );
   }
 
-// canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-  canActivate() {
-    return this.afAuth.authState.map(
-      auth => {
-        if (!auth || auth == null) {
-          this.router.navigate([ '/login' ]);
-          return false;
+  getUserObservable(): Observable<boolean> {
+    return this.afAuth.authState
+    .flatMap( user => {
+      this.userId = user.uid;
+      this.userInfo = user;
+      return this.db.object(`/roles/${this.userId}`);
+    })
+    .flatMap(
+      role => {
+        this.userRole = role.role;
+        if (role != null) {
+          return Observable.of(true);
+        } else {
+          return Observable.of(false);
         }
-
-        // refresh token
-        if (localStorage.getItem('remember') != null) {
-          auth.getIdToken();
-        }
-        return true;
       }
-    ).take(1);
+    );
+  }
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    this.getUserObservable();
+    if (localStorage.getItem('remember') != null && this.userInfo != null) {
+          this.userInfo.getIdToken();
+        }
+    if (this.userId == null) {
+      return this.getUserObservable();
+    }
+
+    if ( !route.data  || route.data == null) {
+      return true;
+    }
+
+    if ( route.data ) {
+      const roles = route.data['roles'] as Array<string>;
+      return (roles == null || roles.indexOf(this.userRole) !== -1);
+    }
+
+    return false;
+    // return this.afAuth.authState.map(
+    //   auth => {
+    //     if (!auth || auth == null) {
+    //       this.router.navigate([ '/login' ]);
+    //       return false;
+    //     }
+
+    //     // refresh token
+    //     if (localStorage.getItem('remember') != null) {
+    //       auth.getIdToken();
+    //     }
+    //     return true;
+    //   }
+    // ).take(1);
   }
 
   getUserSettingsDbRef(): firebase.database.Reference {
@@ -64,5 +103,10 @@ export class AuthGuard implements CanActivate {
   updateUserSettings(settings: any) {
     return this.db.object(`users/${this.userId}`).update(settings);
   }
-  
+
+  signOut() {
+    this.userId = null;
+    this.userInfo = null;
+    this.userRole = null;
+  }
 }

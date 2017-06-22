@@ -3,6 +3,22 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
+import { shopTestData } from '../../data/shoptestdata';
+
+class Shop {
+  name;
+  manager;
+  products;
+  clients;
+  orders;
+  constructor() {
+    this.name = '';
+    this.manager = {};
+    this.products = [];
+    this.clients = [];
+    this.orders = [];
+  }
+}
 
 @Component({
   selector: 'app-signup',
@@ -34,8 +50,15 @@ export class SignupComponent implements OnInit {
             name: name,
             email: email,
           });
+
+          // create shop
+          this.createShop(authUser.uid, name);
+
+          // crete role
+          this.createRole(authUser.uid);
+
           authUser.sendEmailVerification()
-          .then( () =>{
+          .then( () => {
             this.router.navigate(['confemail']);
             console.log('email sendet');
             return;
@@ -43,8 +66,6 @@ export class SignupComponent implements OnInit {
           ).catch(
             () => console.log('erroremail sendet')
           );
-          // console.log("User is created.");
-          // this.router.navigate(['/dashboards/main-view']);
         }).catch(
         (err) => {
           this.signUpError = true;
@@ -57,4 +78,19 @@ export class SignupComponent implements OnInit {
   ngOnInit() {
   }
 
+  createShop(uid, name) {
+    const model = new Shop();
+    model.name = `${name}\`s shop`;
+    model.manager = {name: name, uid: uid };
+
+    model.products = shopTestData.products;
+    model.clients = shopTestData.clients;
+    model.orders = shopTestData.orders;
+
+    this.db.list('/shops').update(uid, model);
+  }
+
+  createRole(uid) {
+    this.db.list('/roles').update(uid, {role: 'manager'});
+  }
 }

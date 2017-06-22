@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
 import { smoothlyMenu } from '../../../app.helpers';
 declare var jQuery:any;
+import { AuthGuard } from '../../auth.service';
 
 @Component({
   selector: 'topnavbar',
@@ -12,7 +13,9 @@ declare var jQuery:any;
 })
 export class TopNavbarComponent {
 
-  constructor(public afAuth: AngularFireAuth, private router: Router) {
+  constructor(public afAuth: AngularFireAuth,
+   private router: Router,
+   private authServ: AuthGuard) {
 
   }
 
@@ -23,6 +26,7 @@ export class TopNavbarComponent {
 
   logout() {
     this.router.navigate([ '/login' ]);
+    this.authServ.signOut();
     this.afAuth.auth.signOut();
     Cookie.set("User", null);
   }

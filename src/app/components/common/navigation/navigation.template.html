@@ -6,7 +6,7 @@
           <img alt="image" class="img-circle" src="assets/images/profile_small.jpg">
           <a dropdownToggle>
             <span class="block m-t-xs"> <strong class="font-bold">{{user.name}}</strong> </span>
-            <span class="text-muted text-xs block">Admin <b class="caret"></b> </span>
+            <span class="text-muted text-xs block">{{role}} <b class="caret"></b> </span>
           </a>
           <ul class="animated fadeInRight dropdown-menu" *dropdownMenu>
             <li><a [routerLink]="['/preferences/profil']">Profile</a></li>
@@ -20,7 +20,7 @@
           IN+
         </div>
       </li>
-      <li [ngClass]="{active: activeRoute('dashboards')}">
+      <li [ngClass]="{active: activeRoute('dashboards')}" *ngIf="role!='admin'">
         <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboard</span> <span class="fa arrow"></span> </a>
         <ul class="nav nav-second-level collapse" [ngClass]="{in: activeRoute('dashboards')}">
           <li [ngClass]="{active: activeRoute('dashboard1')}"><a [routerLink]="['/dashboards/main-view']">Main view</a></li>
@@ -28,24 +28,37 @@
 
         </ul>
       </li>
-      <li [ngClass]="{active: activeRoute('clients')}">
+      <li [ngClass]="{active: activeRoute('clients')}" *ngIf="role!='admin'">
         <a [routerLink]="['/clients']"><i class="fa fa-diamond"></i> <span class="nav-label">Clients</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('orders')}">
+      <li [ngClass]="{active: activeRoute('orders')}" *ngIf="role!='admin'">
         <a [routerLink]="['/orders']"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Orders</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('products')}">
+      <li [ngClass]="{active: activeRoute('products')}" *ngIf="role!='admin'">
         <a [routerLink]="['/products']"><i class="fa fa-flask"></i> <span class="nav-label">Products</span></a>
       </li>
+      <!--admin menu-->
+      <li [ngClass]="{active: activeRoute('admindash')}" *ngIf="role=='admin'">
+        <a [routerLink]="['/admindash']"><i class="fa fa-flask"></i> <span class="nav-label">Dashboard</span></a>
+      </li>
+      <li [ngClass]="{active: activeRoute('shops')}" *ngIf="role=='admin'">
+        <a [routerLink]="['/shops']"><i class="fa fa-flask"></i> <span class="nav-label">Shops</span></a>
+      </li>
+      <li [ngClass]="{active: activeRoute('users')}" *ngIf="role=='admin'">
+        <a [routerLink]="['/users']"><i class="fa fa-flask"></i> <span class="nav-label">Users</span></a>
+      </li>
+      <li [ngClass]="{active: activeRoute('adminmess')}" *ngIf="role=='admin'">
+        <a [routerLink]="['/adminmess']"><i class="fa fa-flask"></i> <span class="nav-label">Messages</span></a>
+      </li>
+      <!--end admin menu-->
       <li [ngClass]="{active: activeRoute('preferences')}">
         <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">Preferences</span> <span class="fa arrow"></span> </a>
         <ul class="nav nav-second-level collapse" [ngClass]="{in: activeRoute('preferences')}">
           <li [ngClass]="{active: activeRoute('profil')}"><a [routerLink]="['/preferences/profil']">Profil</a></li>
-          <li [ngClass]="{active: activeRoute('payment')}"><a [routerLink]="['/preferences/payment']">Payment</a></li>
-          <li [ngClass]="{active: activeRoute('messages')}"><a [routerLink]="['/preferences/messages']">Messages</a></li>
+          <li [ngClass]="{active: activeRoute('payment')}" *ngIf="role!='admin'"><a [routerLink]="['/preferences/payment']">Payment</a></li>
+          <li [ngClass]="{active: activeRoute('messages')}" *ngIf="role!='admin'"><a [routerLink]="['/preferences/messages']">Messages</a></li>
         </ul>
       </li>
     </ul>
-
   </div>
 </nav>

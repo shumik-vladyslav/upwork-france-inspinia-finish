@@ -6,6 +6,7 @@ import { slimscroll } from '../../app.helpers';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import {Subject} from 'rxjs/Subject';
 import {Router} from '@angular/router';
+import { AuthGuard } from '../auth.service';
 
 declare var jQuery: any;
 declare var $: any;
@@ -58,9 +59,12 @@ export class ClientsComponent {
   selectedClient: any = {};
   selectedRowIdx = -1;
 
-  constructor(public db: AngularFireDatabase, private router: Router) {
-    this.clients = db.list('/clients');
-    this.clientsOrders = db.list('/orders');
+  constructor(
+    public db: AngularFireDatabase,
+    private router: Router,
+    private authServ: AuthGuard) {
+    this.clients = db.list(`/shops/${authServ.userId}/clients`);
+    this.clientsOrders = db.list(`/shops/${authServ.userId}/orders`);
 
     this.clientsOrders.subscribe(queriedItems => {
       this.clientsOrdersValue = queriedItems;
@@ -104,7 +108,7 @@ export class ClientsComponent {
   }
 
   onGet(keyClient) {
-    this.db.object(`/clients/${keyClient}`).subscribe(snapshot => {
+    this.db.object(`/shops/${this.authServ.userId}/clients/${keyClient}`).subscribe(snapshot => {
           this.edClientModel = snapshot;
 
           // filter clients orders

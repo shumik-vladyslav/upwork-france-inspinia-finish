@@ -36,9 +36,9 @@ export class LoginUserComponent implements OnInit {
 
     console.log('remember' + remember);
 
-    this.afAuth.auth.onAuthStateChanged(
-      (user) => console.log(`auth state change ${JSON.stringify(user)}`)
-    );
+    // this.afAuth.auth.onAuthStateChanged(
+    //   (user) => console.log(`auth state change ${JSON.stringify(user)}`)
+    // );
 
     this.afAuth.auth.signInWithEmailAndPassword( email , password).then(
       (success: firebase.User) => {
@@ -50,23 +50,15 @@ export class LoginUserComponent implements OnInit {
           return;
         }
 
-        console.log('cuu fire user', JSON.stringify(success));
-
         if ( remember ) {
           localStorage.setItem('remember', 'true');
         }
 
         localStorage.setItem('currFireUser', JSON.stringify(success));
 
-        this.db.list('/users').subscribe(data => {
-          const fUser = data.filter(user => user.email.toLowerCase() == email.toLowerCase() )[0];
-          if (!fUser) {
-            this.loginError = true;
-            this.errorMessage = 'User not found in firebase';
-            this.logout();
-            return;
-          }
-          console.log('Login seccessful');
+        this.db.object(`/users/${success.uid}`).subscribe (
+          fUser => {
+            console.log('Login seccessful');
 
           this.userService.addUser(fUser);
 
@@ -77,11 +69,15 @@ export class LoginUserComponent implements OnInit {
             firebaseKey: fUser.$key
           }));
 
-          // console.log(userInfo,44);
-          // todo redirects check
           this.router.navigate(['/dashboards/main-view']);
-        });
-
+          },
+          error => {
+            this.loginError = true;
+            this.errorMessage = 'User not found in firebase';
+            this.logout();
+            return;
+          }
+        );
       }).catch(
       (err) => {
         this.error = err;

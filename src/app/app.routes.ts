@@ -31,6 +31,10 @@ import { PaymentComponent } from "./components/payment/payment.component";
 import { MessagesComponent } from "./components/messages/messages.component";
 import { AuthGuard } from "./components/auth.service";
 import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
+import { ShopsComponent } from './components/shops/shops.component';
+import { UsersComponent } from './components/users/users.component';
+import { AdmindashComponent } from './components/admindash/admindash.component';
+import { AdminmessComponent } from './components/adminmess/adminmess.component';
 
 export const ROUTES:Routes = [
   // Main redirect
@@ -77,6 +81,11 @@ export const ROUTES:Routes = [
       // {path: 'orders/:id', component: EditOrderComponent, canActivate: [AuthGuard]},
       {path: 'preferences', component: PreferencesComponent, canActivate: [AuthGuard]},
       {path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard]},
+      // admin panel routes
+      {path: 'admindash', component: AdmindashComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
+      {path: 'shops', component: ShopsComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
+      {path: 'users', component: UsersComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
+      {path: 'adminmess', component: AdminmessComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
     ]
   },
   {

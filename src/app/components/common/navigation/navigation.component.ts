@@ -5,6 +5,7 @@ import * as firebase from 'firebase/app';
 import { Cookie } from 'ng2-cookies';
 import { UserService } from "../../shared/user.service";
 import 'jquery-slimscroll';
+import { AuthGuard } from '../../auth.service';
 
 declare var jQuery:any;
 
@@ -14,13 +15,18 @@ declare var jQuery:any;
 })
 
 export class NavigationComponent implements OnInit {
-
+  role;
   user;
 
-  constructor(public afAuth: AngularFireAuth, private router: Router, private userService: UserService) {}
+  constructor(public afAuth: AngularFireAuth,
+   private router: Router,
+    private userService: UserService,
+    private authServ: AuthGuard
+    ) {}
 
   ngOnInit() {
     this.getUserCookie();
+    this.role = this.authServ.userRole;
   }
 
   ngAfterViewInit() {

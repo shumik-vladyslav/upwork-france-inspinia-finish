@@ -51,6 +51,10 @@ import {AppviewsModule} from "./views/appviews/appviews.module";
 // App modules/components
 import {LayoutsModule} from "./components/common/layouts/layouts.module";
 import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
+import { ShopsComponent } from './components/shops/shops.component';
+import { UsersComponent } from './components/users/users.component';
+import { AdmindashComponent } from './components/admindash/admindash.component';
+import { AdminmessComponent } from './components/adminmess/adminmess.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -91,7 +95,11 @@ export const firebaseConfig = {
     LikePipe,
     SumPipe,
     ApplyChosenPipe,
-    ConfirmEmailComponent
+    ConfirmEmailComponent,
+    ShopsComponent,
+    UsersComponent,
+    AdmindashComponent,
+    AdminmessComponent
   ],
   imports: [
     BrowserModule,

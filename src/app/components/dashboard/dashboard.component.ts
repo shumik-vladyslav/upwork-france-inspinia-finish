@@ -5,7 +5,9 @@ import { Cookie } from 'ng2-cookies';
 import { footable } from '../../app.helpers';
 import { List } from 'linqts';
 import { Order } from '../orders/orders.component';
-declare var jQuery:any;
+import { AuthGuard } from '../auth.service';
+
+declare var jQuery: any;
 declare var $: any;
 
 @Component({
@@ -94,10 +96,11 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
   projects: FirebaseListObservable<any[]>;
 
-  public constructor(public db: AngularFireDatabase) {
-    let timearray = [1483351240000,1486324840000,1488776440000,1491444040000,1496307640000,1496408440000,1496509240000,
-    1496797240000,1496804440000,1496811640000];
-    let orderSumArray = [600,100,200,800,50,10,700,200,300,25,450,100,];
+  public constructor(public db: AngularFireDatabase,
+    private authServ: AuthGuard) {
+    // let timearray = [1483351240000,1486324840000,1488776440000,1491444040000,1496307640000,1496408440000,1496509240000,
+    // 1496797240000,1496804440000,1496811640000];
+    // let orderSumArray = [600,100,200,800,50,10,700,200,300,25,450,100,];
 
 
     // setTimeout(() => {
@@ -123,7 +126,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
     this.nav = document.querySelector('nav.navbar');
 
-    db.list('/products').subscribe(
+    db.list(`/shops/${this.authServ.userId}/products`).subscribe(
       products => {
         console.log('products fetched');
         this.stockAlertProducts = products.filter( p => !p.isService && (p.quantity < p.stockAlert));
@@ -134,7 +137,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     // todo visits save to user
     // this.visits = client.visits;
 
-    this.ordersTable2 = db.list('/orders');
+    this.ordersTable2 = db.list(`/shops/${this.authServ.userId}/orders`);
 
     // income chart
     this.daySort();
@@ -144,7 +147,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
     const prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
 
-    this.ordersTable = db.list('/orders').subscribe(snapshots => {
+    this.ordersTable = db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
 
       const lastDay = now.getDate();
       const prevDay = new Date (now.getFullYear(), now.getMonth(), lastDay - 1 ).getDate();
@@ -186,7 +189,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
       this.incomePercent = Math.floor((lastMonthIncome - prevMonthIncome) / prevMonthIncome * 100);
     });
 
-    this.db.list('/clients').subscribe(
+    this.db.list(`/shops/${this.authServ.userId}/clients`).subscribe(
         clients => {
           this.newClients = clients.filter(c => c.date > lastMonth).length;
           const newClientsPrevMonth = clients.filter(c => (new Date(c.date)).getMonth() == prevMonth).length;
@@ -290,7 +293,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
      this.flotOptionsTemplate.xaxis.tickSize = [1, "month"];
     this.flotOptions= this.flotOptionsTemplate;
 
-    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
+    this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
       let orders = new List<Order>(snapshots);
         let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
@@ -310,7 +313,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.flotOptionsTemplate.xaxis.tickSize = [1, 'day'];
     this.flotOptions= this.flotOptionsTemplate;
 
-    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
+    this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
     let orders = new List<Order>(snapshots.filter(s => s.date > currentMonth));
         // let orders = new List<Order>(snapshots);
         let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
@@ -329,7 +332,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
     this.flotOptionsTemplate.xaxis.tickSize = [3, 'hour'];
     this.flotOptions= this.flotOptionsTemplate;
-    this.ordersTable = this.db.list('/orders').subscribe(snapshots => {
+    this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
     let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
 
         let income = this.prepareDatasetForChartIncome(orders,this.getHoursOfTimeStamp);

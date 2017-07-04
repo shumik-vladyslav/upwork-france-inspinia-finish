@@ -3,8 +3,8 @@
   <div id="message" *ngFor="let prod of stockAlertProducts">
     <div style="padding: 5px;">
       <div class="alert alert-danger alert-dismissable">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> 
-        The product "{{prod.name}}" ends. {{prod.quantity}} more left.
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> The product "{{prod.name}}" ends. {{prod.quantity}}
+        more left.
       </div>
     </div>
   </div>
@@ -52,13 +52,13 @@
     <div class="col-lg-3">
       <div class="ibox float-e-margins">
         <div class="ibox-title">
-          <span class="label label-danger pull-right">Dayly</span>
+          <span class="label label-danger pull-right">Daily</span>
           <h5>Sales</h5>
         </div>
         <div class="ibox-content">
           <h1 class="no-margins">{{dailySales}}</h1>
           <div class="stat-percent font-bold text-danger">{{dailySalesPercent}}<i class="fa fa-level-down"></i></div>
-          <small>Dayly</small>
+          <small>Daily</small>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
           <div class="pull-right">
             <div class="btn-group">
               <button (click)="daySort()" type="button" class="btn btn-xs btn-white">Today</button>
-              <button (click)="monthSort()" type="button" class="btn btn-xs btn-white">Monthly</button>
+              <button (click)="monthSort()" type="button" class="btn btn-xs btn-white active">Monthly</button>
               <button (click)="yearsSort()" type="button" class="btn btn-xs btn-white">Annual</button>
             </div>
           </div>
@@ -187,6 +187,43 @@
               </tfoot>
             </table>
             <!--end orders table-->
+
+            <!--chat-->
+            <div class="small-chat-box ng-small-chat fadeInRight animated" *ngIf="openChat" style="z-index:100">
+
+              <div class="heading" draggable="true">
+                <small class="chat-date pull-right">
+        </small> Chat with admin
+              </div>
+
+              <div class="content" chat-slim-scroll style="max-height:234px;overflow-x:hidden;">
+                <div *ngFor="let m of chatMessages | async" [ngClass]="m.author===selfName ? 'right' : 'left'" (show)="onMessShow(m.text)">
+                  <div class="author-name">{{m.author === 'self' ? '' : m.author }}
+                    <small class="chat-date"> {{m.date | date:'shortTime'}} </small>
+                  </div>
+                  <div class="chat-message" [class.active]="m.author !== selfName">
+                    {{m.text}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-chat">
+                <div class="input-group input-group-sm">
+                  <input type="text" [(ngModel)]="chatmessage" placeholder="Message" class="input-sm form-control" (keyup.enter)="onSendChatMess(chatmessage);chatmessage=''">
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" (click)="onSendChatMess(chatmessage);chatmessage=''">Send</button> 
+                  </span></div>
+              </div>
+            </div>
+            <!--openChat = !openChat-->
+            <div id="small-chat" (click)="onChatToggle(chatMessage)">
+
+              <span class="badge badge-warning pull-right">{{chatMessages.length}}</span>
+              <a class="open-small-chat">
+        <i class="fa fa-comments"></i>
+    </a>
+            </div>
+            <!--end chat-->
+
           </div>
         </div>
       </div>

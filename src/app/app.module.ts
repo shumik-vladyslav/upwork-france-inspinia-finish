@@ -40,21 +40,28 @@ import { SparklineModule } from './components/charts/sparkline';
 import { JVectorMapModule } from './components/map/jvectorMap';
 import { LikePipe } from './pipes/LikePipe';
 import { SumPipe } from './pipes/SumPipe';
+import { ReversePipe } from './pipes/ReversePipe';
+
 import { ApplyChosenPipe } from './pipes/ApplyChosenPipe';
 
 import { UiSwitchModule } from 'ng2-ui-switch';
-
 // App views
-import {DashboardsModule} from "./views/dashboards/dashboards.module";
-import {AppviewsModule} from "./views/appviews/appviews.module";
+import {DashboardsModule} from './views/dashboards/dashboards.module';
+import {AppviewsModule} from './views/appviews/appviews.module';
 
 // App modules/components
-import {LayoutsModule} from "./components/common/layouts/layouts.module";
+import {LayoutsModule} from './components/common/layouts/layouts.module';
 import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
 import { ShopsComponent } from './components/shops/shops.component';
 import { UsersComponent } from './components/users/users.component';
 import { AdmindashComponent } from './components/admindash/admindash.component';
 import { AdminmessComponent } from './components/adminmess/adminmess.component';
+import { AdminmailComponent } from './components/adminmail/adminmail.component';
+import { TagsListComponent } from './components/CustomFormControls/tags-list/tags-list.component';
+import { iCheckComponent } from './components/CustomFormControls/i-check/i-check.component';
+
+import { ShopcalendarComponent } from './components/shopcalendar/shopcalendar.component';
+import { SubscriptionComponent } from './components/subscription/subscription.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -94,12 +101,18 @@ export const firebaseConfig = {
     MessagesComponent,
     LikePipe,
     SumPipe,
+    ReversePipe,
     ApplyChosenPipe,
     ConfirmEmailComponent,
     ShopsComponent,
     UsersComponent,
     AdmindashComponent,
-    AdminmessComponent
+    AdminmessComponent,
+    AdminmailComponent,
+    iCheckComponent,
+    TagsListComponent,
+    ShopcalendarComponent,
+    SubscriptionComponent,
   ],
   imports: [
     BrowserModule,

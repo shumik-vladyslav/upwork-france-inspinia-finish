@@ -58,6 +58,11 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    console.log('can activate');
+    if (route.url && route.url[0]) {
+      console.log(route.url[0].path);
+    }
+
     this.getUserObservable();
     if (localStorage.getItem('remember') != null && this.userInfo != null) {
           this.userInfo.getIdToken();
@@ -66,7 +71,7 @@ export class AuthGuard implements CanActivate {
       return this.getUserObservable();
     }
 
-    if ( !route.data  || route.data == null) {
+    if ( !route.data  || route.data == null || !route.data['roles'] ) {
       return true;
     }
 

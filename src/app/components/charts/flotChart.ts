@@ -38,7 +38,7 @@ export class FlotChartDirective implements OnDestroy, OnChanges, OnInit {
   }
 
   // Build
-  private build():any {
+  private build(): any {
 
     // Clear before rebuild
     this.ngOnDestroy();
@@ -50,6 +50,27 @@ export class FlotChartDirective implements OnDestroy, OnChanges, OnInit {
 
     // Let's build chart
     this.chart = jQuery.plot(this.element.nativeElement, this.dataset, this.options);
+
+    // jQuery.plot(this.element.nativeElement).bind('plothover', function (event, pos, item) {
+
+		// 	if ($("#enablePosition:checked").length > 0) {
+		// 		var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+		// 		$("#hoverdata").text(str);
+		// 	}
+
+		// 	if ($("#enableTooltip:checked").length > 0) {
+		// 		if (item) {
+		// 			var x = item.datapoint[0].toFixed(2),
+		// 				y = item.datapoint[1].toFixed(2);
+
+		// 			$("#tooltip").html(item.series.label + " of " + x + " = " + y)
+		// 				.css({top: item.pageY+5, left: item.pageX+5})
+		// 				.fadeIn(200);
+		// 		} else {
+		// 			$("#tooltip").hide();
+		// 		}
+		// 	}
+		// });
   }
 
   // Change

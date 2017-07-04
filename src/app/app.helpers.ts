@@ -80,5 +80,12 @@ export function  slimscroll(){
   // Initialize slimscroll for right sidebar
   $('.full-height-scroll').slimscroll({
     height: '100%'
-  })
+  });
+  console.log('slimscroll');
+  
+    // Initialize slimscroll for small chat
+  // $('.small-chat-box .content').slimScroll({
+  //     height: '234px',
+  //     railOpacity: 0.4
+  // });
 }

@@ -3,9 +3,11 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { FlotChartDirective } from '../../components/charts/flotChart';
 import { Cookie } from 'ng2-cookies';
 import { footable } from '../../app.helpers';
+import { slimscroll } from '../../app.helpers';
 import { List } from 'linqts';
 import { Order } from '../orders/orders.component';
 import { AuthGuard } from '../auth.service';
+import { ChatMessage } from '../../models/ChatMessage';
 
 declare var jQuery: any;
 declare var $: any;
@@ -16,6 +18,8 @@ declare var $: any;
 })
 
 export class DashboardComponent implements OnDestroy, OnInit {
+  selfName = '';
+  openChat = false;
   // inpu
   searchOrder;
   public nav: any;
@@ -86,7 +90,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
       position: 'nw'
     },
     grid: {
-      hoverable: false,
+      hoverable: true,
       borderWidth: 0
     }
   };
@@ -140,8 +144,8 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.ordersTable2 = db.list(`/shops/${this.authServ.userId}/orders`);
 
     // income chart
-    this.daySort();
-    // this.monthSort();
+    // this.daySort();
+    this.monthSort();
     // this.yearsSort();
     const now = new Date();
     const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
@@ -229,9 +233,18 @@ export class DashboardComponent implements OnDestroy, OnInit {
   onSearchOrderClick() {
   }
 
-  public ngOnInit():any {
+  public ngOnInit(): any {
     this.nav.className += ' white-bg';
     footable();
+    // slimscroll();
+    // Initialize slimscroll for small chat
+    let chtDomEl = $('.small-chat-box .content').slimScroll({
+        height: '234px',
+        railOpacity: 0.4
+    });
+    this.authServ.fetchUserSettings().subscribe (
+      sett =>  this.selfName = sett.name
+    );
   }
 
   public ngOnDestroy(): any {
@@ -342,5 +355,31 @@ export class DashboardComponent implements OnDestroy, OnInit {
           this.updateChartDatasets(letOrdersData, income);
         }, 2000);
       });
+  }
+
+  onChatToggle(){
+    console.log('chat toggle');
+
+    this.openChat =  !this.openChat;
+    console.log(this.openChat);
+  }
+
+  // chatMessages: ChatMessage[] = [];
+  chatMessages = this.db.list(`/chats/${this.authServ.userId}`);
+
+  onSendChatMess(text) {
+    const mess = new ChatMessage(this.selfName, text);
+    // console.log('send chat message ' + text);
+    // this.chatMessages.push(mess);
+    var $chat = $('.small-chat-box .content');
+    $chat.scrollTop($chat.height());
+
+    // push to firebase
+    this.chatMessages.push(mess);
+    // this.chatMessages.count()
+  }
+
+  onMessShow(text) {
+    console.log('show mess ' + text);
   }
 }

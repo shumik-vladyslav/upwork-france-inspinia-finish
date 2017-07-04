@@ -27,11 +27,11 @@
         "../vendor/summernote/summernote-bs3.css",
         "../node_modules/chosen-js/chosen.css",
         "../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css",
+        "../node_modules/icheck/skins/square/green.css",
         "styles.scss"
       ],
       "scripts": [
-
-        "../node_modules/jquery/dist/jquery.js",
+        
         "../vendor/bootstrap/bootstrap.min.js",
         "../node_modules/metismenu/dist/metisMenu.js",
         "../node_modules/jquery-sparkline/jquery.sparkline.js",
@@ -41,7 +41,8 @@
         "../vendor/slimscroll/jquery.slimscroll.min.js",
         "../node_modules/chosen-js/chosen.jquery.js",
         "../vendor/footable/footable.all.min.js",
-        "../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"
+        "../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js",
+        "../node_modules/icheck/icheck.min.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

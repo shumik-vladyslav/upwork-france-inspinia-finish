@@ -9,17 +9,102 @@
       </form>-->
     </div>
     <ul class="nav navbar-top-links navbar-right">
+      <li *ngIf="authServ.userRole==='admin' || authServ.userRole==='admin-user'">
+        <a class="count-info" data-toggle="alert" href="#admin-chat" (click)="hideAdminChat = !hideAdminChat">
+              <i class="fa fa-comments"></i> <span class="label label-primary">{{totalNewMessCntr}}</span>
+          </a>
+      </li>
       <li *ngIf="(afAuth.authState | async)">
         <a href="#" (click)="logout()">
           <i class="fa fa-sign-out"></i> Log out
         </a>
       </li>
       <li *ngIf="!(afAuth.authState | async)">
-        <a [routerLink]="['/login']" >
+        <a [routerLink]="['/login']">
           <i class="fa fa-sign-out"></i> Login
         </a>
       </li>
     </ul>
 
   </nav>
+
+  <!--Small Admin chat-->
+  <div *ngIf="!hideSmallChat" id="sm-adm-cht" class="small-chat-box ng-small-chat fadeInRight animated" style="z-index:1000;right: 228px;">
+
+    <div class="heading" draggable="true">
+      <small class="chat-date pull-right"></small><i class="fa fa-user" aria-hidden="true"></i> {{currChatUser}}
+      <a aria-label="close" class="close" style="color:white;" (click)="hideSmallChat=true">×</a>
+    </div>
+
+    <div class="content" chat-slim-scroll style="max-height:234px;overflow-x:hidden;">
+      <div *ngFor="let m of currentChat | async" [ngClass]="m.author===selfName ? 'right' : 'left'" (show)="onMessShow(m.text)">
+        <div class="author-name">{{m.author === 'self' ? '' : m.author }}
+          <small class="chat-date"> {{m.date | date:'short'}} </small>
+        </div>
+        <div class="chat-message" [class.active]="m.author !== selfName">
+          {{m.text}}
+        </div>
+      </div>
+    </div>
+    <div class="form-chat">
+      <div class="input-group input-group-sm">
+        <!---->
+        <input type="text" [(ngModel)]="chatmessage" name="chmess" placeholder="Message" class="input-sm form-control" (keyup.enter)="onSendChatMess(chatmessage);chatmessage=''">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" type="button" (click)="onSendChatMess(chatmessage);chatmessage=''">Send</button> 
+        </span></div>
+    </div>
+  </div>
+  <!--End smaill admin chat-->
+  <div *ngIf="!hideAdminChat" id="admin-chat" class="small-chat-box ng-small-chat fadeInRight animated" style="z-index:1000;height: 100%;bottom: 0px;right: 0;">
+    <div class="heading" draggable="true">
+      <small class="chat-date pull-right"></small><i class="fa fa-users" aria-hidden="true"></i> Chat
+      <a aria-label="close" class="close" style="color:white;" (click)="hideAdminChat=true;hideSmallChat=true;">×</a>
+    </div>
+    <!--Users list content-->
+    <div class="content" chat-slim-scroll style="max-height:100%;overflow-x:hidden;">
+      <ul>
+        <div class="chat-users">
+          <div class="users-list">
+            <h4><strong>Admin-Users</strong></h4>
+            <div class="chat-user" *ngFor="let u of adminUsersGr">
+              <!--<span class="pull-right label label-primary">Online</span>-->
+              <span class="pull-right label label-warning">{{u.newMessages}}</span>
+              <!--<img class="chat-avatar" src="assets/images/profile_small.jpg" alt="">-->
+              <div class="chat-user-name">
+                <a (click)="onChangeChatUser(u.$key,$event);currChatUser=u.name">{{u.name}}</a>
+              </div>
+            </div>
+            <h4><strong>Managers</strong></h4>
+            <div class="chat-user" *ngFor="let u of managersGr; let i = index">
+              <span class="pull-right label label-warning">{{u.newMessages}}</span>
+              <!--<img class="chat-avatar" src="assets/images/profile_small.jpg" alt="">-->
+              <div class="chat-user-name">
+                <a (click)="onChangeChatUser(u.$key,$event);currChatUser=u.name">{{u.name}}</a>
+              </div>
+            </div>
+            <h4><strong>Sellers</strong></h4>
+            <div class="chat-user" *ngFor="let u of sellersGr">
+              <!--<span class="pull-right label label-primary">Online</span>-->
+              <span class="pull-right label label-warning">{{u.newMessages}}</span>
+              <!--<img class="chat-avatar" src="assets/images/profile_small.jpg" alt="">-->
+              <div class="chat-user-name">
+                <a (click)="onChangeChatUser(u.$key,$event);currChatUser=u.name">{{u.name}}</a>
+              </div>
+            </div>
+            <h4><strong>Unregister-Users</strong></h4>
+            <div class="chat-user" *ngFor="let u of unregisterGr">
+              <!--<span class="pull-right label label-primary">Online</span>-->
+              <span class="pull-right label label-warning">{{u.newMessages}}</span>
+              <!--<img class="chat-avatar" src="assets/images/profile_small.jpg" alt="">-->
+              <div class="chat-user-name">
+                <a (click)="onChangeChatUser(u.$key,$event);currChatUser=u.name">{{u.name}}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <!--End users list content-->
+  </div>
 </div>

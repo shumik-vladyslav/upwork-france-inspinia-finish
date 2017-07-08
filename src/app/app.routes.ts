@@ -38,23 +38,18 @@ import { AdminmessComponent } from './components/adminmess/adminmess.component';
 import { AdminmailComponent } from './components/adminmail/adminmail.component';
 import { ShopcalendarComponent } from './components/shopcalendar/shopcalendar.component';
 import { SubscriptionComponent } from './components/subscription/subscription.component';
+import { WhatisnewComponent } from './components/whatisnew/whatisnew.component';
+import { SellersComponent } from './components/sellers/sellers.component';
 
 export const ROUTES: Routes = [
   // Main redirect
   {path: '', redirectTo: 'login', pathMatch: 'full'},
-
-
   // App views
   {
     path: 'dashboards', component: BasicLayoutComponent, canActivate: [AuthGuard],
     children: [
       {path: 'main-view', component: DashboardComponent, canActivate: [AuthGuard]},
-      {path: 'cash', component: CashComponent},
-      {path: 'dashboard1', component: Dashboard1Component, canActivate: [AuthGuard]},
-      {path: 'dashboard2', component: Dashboard2Component, canActivate: [AuthGuard]},
-      {path: 'dashboard3', component: Dashboard3Component, canActivate: [AuthGuard]},
-      {path: 'dashboard4', component: Dashboard4Component, canActivate: [AuthGuard]},
-      {path: 'dashboard5', component: Dashboard5Component, canActivate: [AuthGuard]}
+      {path: 'cash', component: CashComponent}
     ]
   },
   {
@@ -64,12 +59,6 @@ export const ROUTES: Routes = [
       {path: 'payment', component: PaymentComponent, canActivate: [AuthGuard]},
       {path: 'messages', component: MessagesComponent, canActivate: [AuthGuard]},
       {path: 'subscription', component: SubscriptionComponent, canActivate: [AuthGuard]},
-    ]
-  },
-  {
-    path: 'dashboards', component: TopNavigationLayoutComponent,
-    children: [
-      {path: 'dashboard41', component: Dashboard41Component}
     ]
   },
   {
@@ -90,8 +79,10 @@ export const ROUTES: Routes = [
       {path: 'admindash', component: AdmindashComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
       {path: 'shops', component: ShopsComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
       {path: 'users', component: UsersComponent, canActivate: [AuthGuard]},
+      {path: 'sellers', component: SellersComponent, canActivate: [AuthGuard]},
       {path: 'adminmess', component: AdminmessComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
       {path: 'adminmail', component: AdminmailComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }},
+      {path: 'whatisnew', component: WhatisnewComponent, canActivate: [AuthGuard], data: { roles: ['admin'] }}
     ]
   },
   {

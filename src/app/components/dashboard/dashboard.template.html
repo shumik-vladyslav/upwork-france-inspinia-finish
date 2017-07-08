@@ -190,16 +190,13 @@
 
             <!--chat-->
             <div class="small-chat-box ng-small-chat fadeInRight animated" *ngIf="openChat" style="z-index:100">
-
               <div class="heading" draggable="true">
-                <small class="chat-date pull-right">
-        </small> Chat with admin
+                <small class="chat-date pull-right"></small> Chat with admin
               </div>
-
               <div class="content" chat-slim-scroll style="max-height:234px;overflow-x:hidden;">
-                <div *ngFor="let m of chatMessages | async" [ngClass]="m.author===selfName ? 'right' : 'left'" (show)="onMessShow(m.text)">
+                <div *ngFor="let m of messages" [ngClass]="m.author===selfName ? 'right' : 'left'" (show)="onMessShow(m.text)">
                   <div class="author-name">{{m.author === 'self' ? '' : m.author }}
-                    <small class="chat-date"> {{m.date | date:'shortTime'}} </small>
+                    <small class="chat-date"> {{m.date | date:'short'}} </small>
                   </div>
                   <div class="chat-message" [class.active]="m.author !== selfName">
                     {{m.text}}
@@ -214,16 +211,14 @@
                   </span></div>
               </div>
             </div>
-            <!--openChat = !openChat-->
-            <div id="small-chat" (click)="onChatToggle(chatMessage)">
-
-              <span class="badge badge-warning pull-right">{{chatMessages.length}}</span>
+            <!-- openChat = !openChat -->
+            <div id="small-chat" (click)="onChatToggle(chatMessage);">
+              <span class="badge badge-warning pull-right">{{newMessagesNum}}</span>
               <a class="open-small-chat">
-        <i class="fa fa-comments"></i>
-    </a>
+                <i class="fa fa-comments"></i>
+              </a>
             </div>
             <!--end chat-->
-
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,AfterViewInit } from '@angular/core';
 import { NgForm, FormControl, FormGroup, Validators } from '@angular/forms';
 import { footable } from '../../app.helpers';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
@@ -35,7 +35,7 @@ class Product {
   selector: 'products',
   templateUrl: 'products.template.html'
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, AfterViewInit {
 
   createModel = new Product();
   editModel = new Product();
@@ -45,12 +45,16 @@ export class ProductsComponent implements OnInit {
   // list of categories
   catList = [];
 
+  // shop activity log
+  activityLog;
+
   constructor(
     public db: AngularFireDatabase,
     private router: Router,
     public afAuth: AngularFireAuth,
     private authServ: AuthGuard) {
     this.products = db.list(`/shops/${this.authServ.userId}/products`);
+    this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
   }
 
   public ngOnInit(): any {
@@ -67,6 +71,10 @@ export class ProductsComponent implements OnInit {
     );
   }
 
+  ngAfterViewInit() {
+     footable();
+  }
+
   onCreate(form: NgForm) {
     console.log(this.createModel);
     this.createModel.tags = $('#tags').tagsinput('items');
@@ -76,9 +84,11 @@ export class ProductsComponent implements OnInit {
       // update
       this.products.update(this.createModel.$key, this.createModel);
       this.isEditMode = false;
+      this.activityLog.push({date: Date.now(), activity: 'update product', key: this.createModel.$key});
     } else {
       // create
       this.products.push(this.createModel);
+      this.activityLog.push({date: Date.now(), activity: 'new product'});
     }
 
     // close modal

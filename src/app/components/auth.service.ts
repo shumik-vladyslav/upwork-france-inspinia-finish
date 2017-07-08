@@ -13,100 +13,77 @@ import { AngularFireDatabase } from 'angularfire2/database';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  public userId = null;
-  public userInfo = null;
-  public userRole = null;
-
+  userId;
+  userInfo;
+  userRole;
   constructor(
     private afAuth: AngularFireAuth,
     private db: AngularFireDatabase,
-    private router: Router) {
-
-
-    this.afAuth.authState
-    .flatMap( user => {
-      this.userId = user.uid;
-      this.userInfo = user;
-      console.log(`1 userid: ${this.userId} role:${this.userRole}`);
-      return this.db.object(`/roles/${this.userId}`);
-    })
-    .subscribe(
-      role => {
-        this.userRole = role.role;
-        console.log(`2 userid: ${this.userId} role:${this.userRole}`);
-      }
-    );
+    private router: Router
+    ) {
+    this.fetchUserInfo();
   }
 
-  getUserObservable(): Observable<boolean> {
-    return this.afAuth.authState
-    .flatMap( user => {
-      this.userId = user.uid;
-      this.userInfo = user;
-      return this.db.object(`/roles/${this.userId}`);
-    })
-    .flatMap(
-      role => {
-        this.userRole = role.role;
-        if (role != null) {
-          return Observable.of(true);
-        } else {
-          return Observable.of(false);
-        }
+  // fetch user info from local storage
+  fetchUserInfo() {
+    const json = localStorage.getItem('userInfo');
+    if (json) {
+      try {
+        const userInfo = JSON.parse(json);
+        this.userInfo = userInfo;
+        this.userId = userInfo.uid;
+        this.userRole = userInfo.role;
+      } catch (e) {
+        console.log('user settings parse error');
+        this.router.navigate([ '/login' ]);
       }
-    );
+    } else {
+      this.router.navigate([ '/login' ]);
+    }
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+
+    if (localStorage.getItem('remember') != null && this.userInfo != null) {
+      // todo remember
+      // this.userInfo.getIdToken();
+    }
+
+    if (!this.userInfo) {
+      this.fetchUserInfo();
+    }
+
     console.log('can activate');
-    if (route.url && route.url[0]) {
+    if (!route.url || route.url.length === 0) {
+      return true;
+    } else {
       console.log(route.url[0].path);
     }
 
-    this.getUserObservable();
-    if (localStorage.getItem('remember') != null && this.userInfo != null) {
-          this.userInfo.getIdToken();
-        }
-    if (this.userId == null) {
-      return this.getUserObservable();
-    }
 
-    if ( !route.data  || route.data == null || !route.data['roles'] ) {
+    if (
+      this.userInfo &&
+      this.userInfo.routes &&
+      this.userInfo.routes.indexOf(route.url[0].path) === -1
+      ) {
       return true;
+    } else if (this.userInfo &&
+      !this.userInfo.routes) {
+        return true;
     }
-
-    if ( route.data ) {
-      const roles = route.data['roles'] as Array<string>;
-      return (roles == null || roles.indexOf(this.userRole) !== -1);
-    }
-
     return false;
-    // return this.afAuth.authState.map(
-    //   auth => {
-    //     if (!auth || auth == null) {
-    //       this.router.navigate([ '/login' ]);
-    //       return false;
-    //     }
-
-    //     // refresh token
-    //     if (localStorage.getItem('remember') != null) {
-    //       auth.getIdToken();
-    //     }
-    //     return true;
-    //   }
-    // ).take(1);
   }
 
   getUserSettingsDbRef(): firebase.database.Reference {
-    return this.db.database.ref(`users/${this.userId}`);
+    return this.db.database.ref(`users/${this.userInfo.uid}`);
   }
 
   fetchUserSettings(): Observable<any> {
-    return this.db.object(`users/${this.userId}`);
+    return this.db.object(`users/${this.userInfo.uid}`);
   }
 
   updateUserSettings(settings: any) {
-    return this.db.object(`users/${this.userId}`).update(settings);
+    return this.db.object(`users/${this.userInfo.uid}`).update(settings);
   }
 
   signOut() {

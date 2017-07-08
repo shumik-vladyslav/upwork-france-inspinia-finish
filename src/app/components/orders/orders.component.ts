@@ -111,6 +111,9 @@ export class OrdersComponent implements OnInit {
   priceMethods;
   selectedPriceMethos;
   selectedOrderId;
+  
+  // shop activity log
+  activityLog;
 
   constructor(public db: AngularFireDatabase,
    private router: Router,
@@ -119,7 +122,7 @@ export class OrdersComponent implements OnInit {
     this.orders = db.list(`/shops/${authServ.userId}/orders`);
     this.clients = db.list(`/shops/${authServ.userId}/clients`);
     this.productsFrbsCollection = db.list(`/shops/${authServ.userId}/products`);
-
+    this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
     this.db.list(`/shops/${authServ.userId}/orders`).subscribe(snapshots => {
 
       this.totalOrders = snapshots.length;
@@ -217,6 +220,7 @@ export class OrdersComponent implements OnInit {
 
     // save to firebase
     this.orders.push(order);
+    this.activityLog.push({date: Date.now(), activity: 'new order'});
 
     // close modal
     $('#create-form').modal('toggle');
@@ -284,7 +288,7 @@ export class OrdersComponent implements OnInit {
         delete order.component;
 
         this.orders.update(key, order);
-        // to do update products quantity
+        this.activityLog.push({date: Date.now(), activity: 'update order', key: key});
 
         // close modal
         $('#edit-form').modal('toggle');

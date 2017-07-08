@@ -20,36 +20,39 @@
           IN+
         </div>
       </li>
-      <li [ngClass]="{active: activeRoute('dashboards')}" *ngIf="role!='admin'">
+      <li [ngClass]="{active: activeRoute('dashboards')}" *ngIf="isCanSee('manager','seller','dashboards')">
         <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboard</span> <span class="fa arrow"></span> </a>
         <ul class="nav nav-second-level collapse" [ngClass]="{in: activeRoute('dashboards')}">
           <li [ngClass]="{active: activeRoute('dashboard1')}"><a [routerLink]="['/dashboards/main-view']">Main view</a></li>
           <li [ngClass]="{active: activeRoute('dashboard1')}"><a [routerLink]="['/dashboards/cash']">Cash</a></li>
         </ul>
       </li>
-      <li [ngClass]="{active: activeRoute('clients')}" *ngIf="role!='admin'">
+      <li [ngClass]="{active: activeRoute('clients')}" *ngIf="isCanSee('manager','seller','clients')">
         <a [routerLink]="['/clients']"><i class="fa fa-diamond"></i> <span class="nav-label">Clients</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('orders')}" *ngIf="role!='admin'">
+      <li [ngClass]="{active: activeRoute('orders')}" *ngIf="isCanSee('manager','seller','orders')">
         <a [routerLink]="['/orders']"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Orders</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('products')}" *ngIf="role!='admin'">
+      <li [ngClass]="{active: activeRoute('products')}" *ngIf="isCanSee('manager','seller','products')">
         <a [routerLink]="['/products']"><i class="fa fa-flask"></i> <span class="nav-label">Products</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('calendar')}" *ngIf="role!='admin'">
+      <li [ngClass]="{active: activeRoute('calendar')}" *ngIf="isCanSee('manager','seller','calendar')">
         <a [routerLink]="['/calendar']"><i class="fa fa-flask"></i> <span class="nav-label">Calendar</span></a>
       </li>
+      <li [ngClass]="{active: activeRoute('whatisnew')}" *ngIf="isCanSee('manager','seller','whatisnew')">
+        <a [routerLink]="['/whatisnew']"><i class="fa fa-flask"></i> <span class="nav-label">What is new</span></a>
+      </li>
       <!-- admin menu -->
-      <li [ngClass]="{active: activeRoute('admindash')}" *ngIf="role=='admin'">
+      <li [ngClass]="{active: activeRoute('admindash')}" *ngIf="isCanSee('admin','admin-user','admindash')">
         <a [routerLink]="['/admindash']"><i class="fa fa-flask"></i> <span class="nav-label">Dashboard</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('shops')}" *ngIf="role=='admin'">
+      <li [ngClass]="{active: activeRoute('shops')}" *ngIf="isCanSee('admin','admin-user','shops')">
         <a [routerLink]="['/shops']"><i class="fa fa-flask"></i> <span class="nav-label">Shops</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('adminmess')}" *ngIf="role=='admin'">
+      <li [ngClass]="{active: activeRoute('adminmess')}" *ngIf="isCanSee('admin','admin-user','adminmess')">
         <a [routerLink]="['/adminmess']"><i class="fa fa-flask"></i> <span class="nav-label">Messages</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('adminmail')}" *ngIf="role=='admin'">
+      <li [ngClass]="{active: activeRoute('adminmail')}" *ngIf="isCanSee('admin','admin-user','adminmail')">
         <a [routerLink]="['/adminmail']"><i class="fa fa-flask"></i> <span class="nav-label">eMails</span></a>
       </li>
       <!-- end admin menu -->
@@ -58,12 +61,15 @@
         <ul class="nav nav-second-level collapse" [ngClass]="{in: activeRoute('preferences')}">
           <!-- *ngIf="role=='admin'" -->
           <li [ngClass]="{active: activeRoute('users')}" >
-            <a [routerLink]="['/users']"><span class="nav-label">Users</span></a>
+            <a [routerLink]="['/users']"><span class="nav-label" *ngIf="isCanSee('admin','admin-user','users')">Users</span></a>
+          </li>
+          <li [ngClass]="{active: activeRoute('sellers')}" *ngIf="isCanSee('manager','seller','sellers')">
+            <a [routerLink]="['/sellers']"><span class="nav-label">Sellers</span></a>
           </li>
           <li [ngClass]="{active: activeRoute('profil')}"><a [routerLink]="['/preferences/profil']">Profil</a></li>
-          <li [ngClass]="{active: activeRoute('payment')}" *ngIf="role!='admin'"><a [routerLink]="['/preferences/payment']">Payment</a></li>
-          <li [ngClass]="{active: activeRoute('messages')}" *ngIf="role!='admin'"><a [routerLink]="['/preferences/messages']">Messages</a></li>
-          <li [ngClass]="{active: activeRoute('subscription')}" *ngIf="role!='admin'"><a [routerLink]="['/preferences/subscription']">Subscription</a></li>
+          <li [ngClass]="{active: activeRoute('payment')}" *ngIf="isCanSee('manager','seller','payment')"><a [routerLink]="['/preferences/payment']">Payment</a></li>
+          <li [ngClass]="{active: activeRoute('messages')}" *ngIf="isCanSee('manager','seller','messages')"><a [routerLink]="['/preferences/messages']">Messages</a></li>
+          <li [ngClass]="{active: activeRoute('subscription')}" *ngIf="isCanSee('manager','seller','subscription')"><a [routerLink]="['/preferences/subscription']">Subscription</a></li>
         </ul>
       </li>
     </ul>

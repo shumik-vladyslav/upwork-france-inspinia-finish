@@ -95,38 +95,38 @@ export class DashboardComponent implements OnDestroy, OnInit {
     }
   };
   public flotOptions: any = this.flotOptionsTemplate;
-  
 
+  // Chat functionality
+  chatMessages = this.db.list(`/chats/${this.authServ.userId}`);
+  messages = [];
+  newMessagesNum = null;
 
   projects: FirebaseListObservable<any[]>;
 
   public constructor(public db: AngularFireDatabase,
     private authServ: AuthGuard) {
-    // let timearray = [1483351240000,1486324840000,1488776440000,1491444040000,1496307640000,1496408440000,1496509240000,
-    // 1496797240000,1496804440000,1496811640000];
-    // let orderSumArray = [600,100,200,800,50,10,700,200,300,25,450,100,];
-
-
-    // setTimeout(() => {
-    //   for (let index = 0; index < timearray.length; index++) {
-    //         const date = timearray[index];
-    //         const sum = orderSumArray[index];
-    //         let order = new Order();
-    //         order.orderId = index;
-    //         order.date = date;
-    //         order.orderSum = sum;
-    //         order.clientName = "JonDirr";
-    //         order.status = 'pending';
-    //         order.paid = 'paid';
-    //         order.products = ['Swodoo','Shield'];
-    //         order.quantity = 1;
-    //         order.priceMethod = '';
-    //         order.notes = '';
-    //         order.ticketNumber = '';
-    //         this.db.list('orders').update(index.toPrecision(), order);
-    //       }
-    //   }
-    // , 3000);
+    if (true) {
+      this.db.object(`/chats/${this.authServ.userId}/unrUsrMsgs`).subscribe(
+        obj => {
+          if (obj) {
+            this.newMessagesNum = obj.$value;
+            console.log('obj.$value;' + obj.$value);
+          } else {
+            this.newMessagesNum = null;
+          }
+        }
+      );
+    }
+    this.chatMessages.subscribe (
+      mess => {
+        // if (!this.openChat) {
+        //   this.newMessagesNum = mess.length - this.messages.length + this.newMessagesNum;
+        // } else {
+        //   this.newMessagesNum = null;
+        // }
+        this.messages = mess;
+      }
+    );
 
     this.nav = document.querySelector('nav.navbar');
 
@@ -348,7 +348,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
     let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
 
-        let income = this.prepareDatasetForChartIncome(orders,this.getHoursOfTimeStamp);
+        let income = this.prepareDatasetForChartIncome(orders, this.getHoursOfTimeStamp);
         let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
 
         setTimeout(() => {
@@ -357,26 +357,33 @@ export class DashboardComponent implements OnDestroy, OnInit {
       });
   }
 
-  onChatToggle(){
+  onChatToggle() {
     console.log('chat toggle');
 
     this.openChat =  !this.openChat;
+
+    // renew unreaded counter
+    this.db.list(`/chats`).update(this.authServ.userId, { unrUsrMsgs: null});
+
     console.log(this.openChat);
   }
 
-  // chatMessages: ChatMessage[] = [];
-  chatMessages = this.db.list(`/chats/${this.authServ.userId}`);
-
   onSendChatMess(text) {
     const mess = new ChatMessage(this.selfName, text);
-    // console.log('send chat message ' + text);
-    // this.chatMessages.push(mess);
-    var $chat = $('.small-chat-box .content');
-    $chat.scrollTop($chat.height());
-
+    // this.newMessagesNum = null;
+    this.db.list(`/chats`).update(this.authServ.userId, { unrUsrMsgs: null});
     // push to firebase
     this.chatMessages.push(mess);
-    // this.chatMessages.count()
+
+    this.db.object(`/chats/${this.authServ.userId}/newMessCounter`).take(1).subscribe (
+      counter => {
+        console.log(counter);
+        if (!counter.$value) {
+          counter.$value = 0;
+        }
+        this.db.list(`/chats`).update(this.authServ.userId, { newMessCounter: counter.$value + 1});
+      }
+    );
   }
 
   onMessShow(text) {

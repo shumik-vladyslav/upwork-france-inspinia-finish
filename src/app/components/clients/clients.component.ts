@@ -59,13 +59,15 @@ export class ClientsComponent {
   selectedClient: any = {};
   selectedRowIdx = -1;
 
+  // shop logs
+  activityLog;
   constructor(
     public db: AngularFireDatabase,
     private router: Router,
     private authServ: AuthGuard) {
     this.clients = db.list(`/shops/${authServ.userId}/clients`);
     this.clientsOrders = db.list(`/shops/${authServ.userId}/orders`);
-
+    this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
     this.clientsOrders.subscribe(queriedItems => {
       this.clientsOrdersValue = queriedItems;
     });
@@ -98,6 +100,7 @@ export class ClientsComponent {
 
     // send to firebase
     this.clients.push(client);
+    this.activityLog.push({date: Date.now(), activity: 'new client', name: client.name});
 
     // close modal
     $('#create-form').modal('toggle');
@@ -127,6 +130,7 @@ export class ClientsComponent {
 
     // send to firebase
     this.clients.update(client.$key, client);
+    this.activityLog.push({date: Date.now(), activity: 'edit client', key: client.$key});
 
     // close modal
     $('#edit-form').modal('toggle');

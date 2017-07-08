@@ -13,14 +13,13 @@
 </div>
 
 <div class="wrapper wrapper-content animated fadeInRight ecommerce">
-
   <div class="row">
     <div class="col-lg-12">
       <div class="tabs-container">
         <div class="tab-content">
           <div id="tab-1" class="tab-pane active">
             <div class="panel-body">
-              <form class="form-edit" novalidate (submit)="onEditSubmit()">
+              <form class="form-edit" novalidate *ngIf="sett">
                 <fieldset class="form-horizontal">
                   <div class="form-group">
                     <div *ngIf="seccessSave" class="alert alert-success">
@@ -32,32 +31,32 @@
                       {{errorMessage}}
                     </div>
                   </div>
-                  <div class="form-group"><label class="col-sm-2 control-label">Store name:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="storeName" name="storeName" type="text" class="form-control" placeholder="Store name"></div>
+                  <div class="form-group" *ngIf="sett.role == 'manager' || sett.role == 'seller'"><label class="col-sm-2 control-label" >Store name:</label>
+                    <div class="col-sm-10"><input [(ngModel)]="sett.storeName" name="storeName" type="text" class="form-control" placeholder="Store name"></div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">User Name:</label>
-                    <div class="col-sm-10"><input type="text" [(ngModel)]="name" name="name" class="form-control" placeholder="User Name"></div>
+                    <div class="col-sm-10"><input type="text" [(ngModel)]="sett.name" name="name" class="form-control" placeholder="User Name"></div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Email:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="email" name="email" type="text" class="form-control" placeholder="Email"></div>
+                    <div class="col-sm-10"><input [(ngModel)]="sett.email" name="email" type="text" class="form-control" placeholder="Email"></div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Password:</label>
                     <div class="col-sm-10">
                       <button *ngIf="!hiddPW" type="button" (click)="this.hiddPW = true" class="btn btn-success btn-block"> Change password</button>
-                      <input *ngIf="hiddPW" [(ngModel)]="password" name="password" type="text" class="form-control" placeholder="Password">
+                      <input *ngIf="hiddPW" [(ngModel)]="sett.password" name="password" type="text" class="form-control" placeholder="Password">
                     </div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Address:</label>
-                    <div class="col-sm-10"><input [(ngModel)]="address" name="address" type="text" class="form-control" placeholder="Address"></div>
+                    <div class="col-sm-10"><input [(ngModel)]="sett.address" name="address" type="text" class="form-control" placeholder="Address"></div>
                   </div>
                   <div class="form-group"><label class="col-sm-2 control-label">Country:</label>
-                    <div class="col-sm-10"><select required [(ngModel)]="country" name="country-dr-down" class="form-control">
+                    <div class="col-sm-10"><select required [(ngModel)]="sett.country" name="country-dr-down" class="form-control">
                       <option selected="selected" disabled>Country...</option>
                       <option *ngFor="let c of countries" [ngValue]="c.id">{{ c.name }}</option>
                     </select>
                     </div>
                   </div>
-                  <div class="form-group"><label class="col-sm-2 control-label">User status:</label>
+                  <div class="form-group" *ngIf="sett.role == 'manager' || sett.role == 'seller'"><label class="col-sm-2 control-label">User status:</label>
                     <div class="col-sm-10"><input disabled ="status" name="status" type="text" class="form-control" placeholder="User status" value="free plan"></div>
                   </div>
                   <div class="col-sm-12">
@@ -73,5 +72,4 @@
       </div>
     </div>
   </div>
-
 </div>

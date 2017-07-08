@@ -25,6 +25,25 @@ export class LoginUserComponent implements OnInit {
     this.user = afAuth.authState;
   }
 
+  subscribeOnAuthState () {
+    this.afAuth.authState.subscribe (
+      user => {
+        if (!user) {
+          console.log('user not logined');
+          localStorage.removeItem('remember');
+          localStorage.removeItem('userInfo');
+          return;
+        }
+        this.db.object(`/users/${user.uid}`).subscribe (
+          fUser => {
+            console.log('user info changes');
+            fUser.uid = user.uid;
+            localStorage.setItem('userInfo', JSON.stringify(fUser));
+          });
+      }
+    );
+  }
+
   onSubmit(formData) {
     if (!formData.valid) {
       return;
@@ -39,37 +58,47 @@ export class LoginUserComponent implements OnInit {
     // this.afAuth.auth.onAuthStateChanged(
     //   (user) => console.log(`auth state change ${JSON.stringify(user)}`)
     // );
-
+    this.subscribeOnAuthState();
     this.afAuth.auth.signInWithEmailAndPassword( email , password).then(
       (success: firebase.User) => {
+
+        // email not verified
         if (!success.emailVerified) {
-          // this.error = true;
-          // this.errorMessage = 'Please approve your email address.';
           this.router.navigate(['confemail']);
           this.afAuth.auth.signOut();
           return;
         }
 
+        // remember me
         if ( remember ) {
           localStorage.setItem('remember', 'true');
+        } else {
+          localStorage.removeItem('remember');
         }
 
-        localStorage.setItem('currFireUser', JSON.stringify(success));
+        // localStorage.setItem('currFireUser', JSON.stringify(success));
 
         this.db.object(`/users/${success.uid}`).subscribe (
           fUser => {
             console.log('Login seccessful');
+            fUser.uid = success.uid;
+            localStorage.setItem('userInfo', JSON.stringify(fUser));
+          // this.userService.addUser(fUser);
 
-          this.userService.addUser(fUser);
-
-          Cookie.set('User', JSON.stringify({
-            name: fUser.name,
-            email: fUser.email,
-            userInfo: fUser,
-            firebaseKey: fUser.$key
-          }));
-
-          this.router.navigate(['/dashboards/main-view']);
+          // Cookie.set('User', JSON.stringify({
+          //   name: fUser.name,
+          //   email: fUser.email,
+          //   userInfo: fUser,
+          //   firebaseKey: fUser .$key
+          // }));
+          console.log('asdasd'); 
+          
+            console.log(fUser.role);
+            if (fUser.role =='admin' || fUser.role =='admin-user') {
+              this.router.navigate(['/admindash']);
+            } else {
+              this.router.navigate(['/dashboards/main-view']);
+            }
           },
           error => {
             this.loginError = true;
@@ -90,8 +119,9 @@ export class LoginUserComponent implements OnInit {
   logout() {
     console.log('logout');
     this.afAuth.auth.signOut();
-    Cookie.set('User', null);
+    // Cookie.set('User', null);
     localStorage.removeItem('remember');
+    localStorage.removeItem('userInfo');
     this.router.navigate([ '/login' ]);
   }
 

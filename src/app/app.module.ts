@@ -62,6 +62,8 @@ import { iCheckComponent } from './components/CustomFormControls/i-check/i-check
 
 import { ShopcalendarComponent } from './components/shopcalendar/shopcalendar.component';
 import { SubscriptionComponent } from './components/subscription/subscription.component';
+import { WhatisnewComponent } from './components/whatisnew/whatisnew.component';
+import { SellersComponent } from './components/sellers/sellers.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -113,6 +115,8 @@ export const firebaseConfig = {
     TagsListComponent,
     ShopcalendarComponent,
     SubscriptionComponent,
+    WhatisnewComponent,
+    SellersComponent,
   ],
   imports: [
     BrowserModule,

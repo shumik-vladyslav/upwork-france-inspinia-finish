@@ -6,17 +6,12 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Ng2Summernote } from 'ng2-summernote/ng2-summernote';
 import { Cookie } from 'ng2-cookies';
-import { UserService } from "../shared/user.service";
+import { UserService } from '../shared/user.service';
 import { CountriesCatalog } from './countries';
-@Component({
-  selector: 'preferences',
-  templateUrl: './profil.component.html',
-  styleUrls: ['./profil.component.css']
-})
-export class ProfilComponent implements OnInit {
+import { AuthGuard } from '../auth.service';
 
-  userAf: Observable<firebase.User>;
-  id;
+class User {
+  $key;
   name;
   phone;
   email;
@@ -25,16 +20,25 @@ export class ProfilComponent implements OnInit {
   country;
   storeName;
   password;
+}
 
-  users;
-  user;
-  obj;
+@Component({
+  selector: 'preferences',
+  templateUrl: './profil.component.html',
+  styleUrls: ['./profil.component.css']
+})
 
-  userId;
-
+export class ProfilComponent implements OnInit {
+  userAf: Observable<firebase.User>;
   seccessSave = false;
   errorSave = false;
   errorMessage = '';
+
+  // user settings
+  sett;
+
+  // user id
+  uid;
 
   // counties dropdown
   countries = CountriesCatalog;
@@ -49,64 +53,31 @@ export class ProfilComponent implements OnInit {
   @Input() uploadFolder = '';
 
   constructor(
-    public afAuth: AngularFireAuth,
     public db: AngularFireDatabase,
-    private router: Router,
-    private route: ActivatedRoute,
-    private userService: UserService
+    private authServ: AuthGuard
   ) {
-    this.userAf = this.afAuth.authState;
-    this.users = db.list('/users');
   }
 
   ngOnInit() {
-    // this.hiddPW = true;
-    this.id = this.route.snapshot.params['id'];
-    this.users = this.db.list('/users');
-    this.user =  this.db.list('/users').subscribe(users => {
-
-      let userId = JSON.parse(Cookie.getAll()['User']);
-      users.forEach(snapshot => {
-
-        if (snapshot.email == userId.email) {
-
-          this.id = snapshot.$key;
-          this.name = snapshot.name;
-          this.phone = snapshot.phone;
-          this.email = snapshot.email;
-          this.status = snapshot.status;
-          this.address = snapshot.address;
-          this.country = snapshot.country;
-          this.password = snapshot.password;
-        }
-
-      });
-    });
-
-    this.obj = this.userService.getUser();
+    this.uid = this.authServ.userInfo.uid;
+    this.db.object(`/users/${this.uid}`).subscribe (
+      sett => {
+        this.sett = sett;
+        console.log(sett);
+      }
+    );
   }
 
-
   onEditSubmit() {
-    let user = {
-      name: this.name,
-      //phone: this.phone,
-      email: this.email,
-      //status: this.status,
-      //address: this.address,
-      //country: this.country,
-    }
 
-    this.users.update(this.id, user)
+    this.db.list(`/users`).update(this.uid, this.sett)
     .then(() => this.seccessSave = true)
-    .catch(e => {this.errorSave = true; this.errorMessage = e.message });
-
-    let userId = JSON.parse(Cookie.getAll()['User']);
-    userId.name = this.name;
-    Cookie.set('User', JSON.stringify(userId));
+    .catch(e => {
+      this.errorSave = true;
+      this.errorMessage = e.message;
+    });
   }
 
   onChangePW() {
-
   }
 }

@@ -10,6 +10,7 @@ import { AuthGuard } from '../auth.service';
 
 declare var jQuery: any;
 declare var $: any;
+declare var FooTable: any;
 
 export class Client {
   $key;
@@ -59,13 +60,31 @@ export class ClientsComponent {
   selectedClient: any = {};
   selectedRowIdx = -1;
 
+  // disable controll buttons if shop is unpaid
+  dsblCtrlBtns = false;
+
+  //clients table source
+  clientsTblSrc = [];
+
   // shop logs
   activityLog;
   constructor(
     public db: AngularFireDatabase,
     private router: Router,
     private authServ: AuthGuard) {
+    if ( authServ.userInfo.status === 'unpaid' ) {
+      this.dsblCtrlBtns = true;
+    }
     this.clients = db.list(`/shops/${authServ.userId}/clients`);
+    this.clients.subscribe (
+      clients => {
+        this.clientsTblSrc = clients;
+        setTimeout(() => {
+             FooTable.init('.footable');
+        }, 400 );
+      }
+    );
+
     this.clientsOrders = db.list(`/shops/${authServ.userId}/orders`);
     this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
     this.clientsOrders.subscribe(queriedItems => {
@@ -78,7 +97,6 @@ export class ClientsComponent {
   }
 
   ngOnInit (): any {
-    footable();
     summernote();
     slimscroll();
   }

@@ -118,10 +118,7 @@
       </div>
     </div>
   </div>
-
-
   <div class="row">
-
     <div class="col-lg-12">
       <div class="ibox float-e-margins">
         <div class="ibox-title">
@@ -133,34 +130,53 @@
             <div class="col-sm-9 m-b-xs">
               <!--table slices-->
               <div data-toggle="buttons" class="btn-group">
-                <label class="btn btn-sm btn-white"> <input type="radio" id="option1" name="options"> Day </label>
-                <label class="btn btn-sm btn-white active"> <input type="radio" id="option2" name="options"> Week </label>
-                <label class="btn btn-sm btn-white"> <input type="radio" id="option3" name="options"> Month </label>
+                <!--<label class="btn btn-sm btn-white"> <input type="radio" id="option1" name="options" (click)="offersFilter('day')"> Day </label>
+                <label class="btn btn-sm btn-white"> <input type="radio" id="option3" name="options" (click)="offersFilter('month')"> Month </label>
+                <label class="btn btn-sm btn-white active"> <input type="radio" id="option2" name="options" (click)="offersFilter('year')"> Year </label>-->
+                <button id="day" (click)="offersFilter('day');" type="button" class="btn btn-xs btn-white">Day</button>
+                <button id="mon" (click)="offersFilter('month');" type="button" class="btn btn-xs btn-white active">Month</button>
+                <button id="yea" (click)="offersFilter('year');" type="button" class="btn btn-xs btn-white">Year</button>
               </div>
+              <!--class="form-control input-sm"-->
+              <select name="rowsPerPage" [(ngModel)]="rowsPerPage" (change)="onRowsPerPageChange()" >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+              </select>
               <!--end table slices-->
             </div>
             <div class="col-sm-3">
-              <div class="input-group">
+              <!--<input type="text" class="form-control input-sm m-b-xs" id="filter" placeholder="Search in table">-->
+              <!--<div class="input-group">
                 <input type="text" [(ngModel)]="searchOrder" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
-              <button type="button" class="btn btn-sm btn-primary"> Go!</button> </span></div>
+              <button type="button" class="btn btn-sm btn-primary"> Go!</button> </span>
+              </div>-->
             </div>
           </div>
           <div class="table-responsive">
             <!--orders table-->
-            <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+                        <!--data-filtering="true" -->
+                        <!--footable-filtering-right-->
+            <table class="footable table table-stripped toggle-arrow-tiny " 
+            data-paging-size="20" 
+            data-sorting="true"
+            data-filtering="true"
+            data-filter-delay="10"
+            filter="#filter"
+            data-paging="true">
               <thead>
                 <tr>
-
                   <th data-toggle="true" data-type="numeric" data-sort-initial="true">Order ID</th>
                   <th data-toggle="true">Created</th>
                   <th data-hide="phone">Client name</th>
                   <th data-hide="status">Status</th>
                   <th data-hide="Price">Paid/unpaid</th>
-
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let order of ordersTable2 | async | likefilter:searchOrder">
+                <tr *ngFor="let order of ordersListForTable | likefilter:searchOrder">
                   <td>
                     {{order.orderId}}
                   </td>

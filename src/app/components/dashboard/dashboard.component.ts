@@ -11,6 +11,7 @@ import { ChatMessage } from '../../models/ChatMessage';
 
 declare var jQuery: any;
 declare var $: any;
+declare var FooTable: any;
 
 @Component({
   selector: 'dashboard',
@@ -103,8 +104,23 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
   projects: FirebaseListObservable<any[]>;
 
+  ordersListForTable;
+  rowsPerPage = 20;
+
+  onRowsPerPageChange() {
+    FooTable.get('.footable').pageSize(this.rowsPerPage);
+  }
   public constructor(public db: AngularFireDatabase,
     private authServ: AuthGuard) {
+      this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(
+        orders => {
+          this.ordersListForTable = orders;
+          setTimeout(() => {
+            FooTable.init('.footable');
+          }, 300 );
+        }
+      );
+
     if (true) {
       this.db.object(`/chats/${this.authServ.userId}/unrUsrMsgs`).subscribe(
         obj => {
@@ -134,7 +150,6 @@ export class DashboardComponent implements OnDestroy, OnInit {
       products => {
         console.log('products fetched');
         this.stockAlertProducts = products.filter( p => !p.isService && (p.quantity < p.stockAlert));
-        console.log(JSON.stringify( this.stockAlertProducts));
       }
     );
 
@@ -203,6 +218,40 @@ export class DashboardComponent implements OnDestroy, OnInit {
       );
   }
 
+  offersFilter(period: string) {
+    // FooTable.get('.footable')
+    console.log('offersFilter');
+    $('#yea').removeClass('active');
+    $('#mon').removeClass('active');
+    $('#day').removeClass('active');
+
+    let dataThreshold;
+    const date = new Date();
+    switch (period) {
+      case 'day':
+        $('#day').addClass('active');
+        dataThreshold =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
+        break;
+      case 'month':
+        $('#mon').addClass('active');
+        dataThreshold = new Date(date.getFullYear(), date.getMonth());
+        break;
+      case 'year':
+        $('#yea').addClass('active');
+        dataThreshold = new Date(date.getFullYear());
+        break;
+      default:
+        break;
+    }
+    this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(
+        orders => {
+          this.ordersListForTable = orders.filter(o => o.date > dataThreshold);
+          setTimeout(() => {
+            FooTable.init('.footable');
+          }, 300 );
+        }
+    );
+  }
  updateChartDatasets (orders, income = []) {
     this.flotDataset = [
         {
@@ -235,7 +284,8 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
   public ngOnInit(): any {
     this.nav.className += ' white-bg';
-    footable();
+
+    //  footable();
     // slimscroll();
     // Initialize slimscroll for small chat
     let chtDomEl = $('.small-chat-box .content').slimScroll({
@@ -303,7 +353,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
   yearsSort() {
     this.barWidth= 15 * 24 * 60 * 60 * 1000;
-     this.flotOptionsTemplate.xaxis.tickSize = [1, "month"];
+     this.flotOptionsTemplate.xaxis.tickSize = [1, 'month'];
     this.flotOptions= this.flotOptionsTemplate;
 
     this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import {AngularFireDatabase} from 'angularfire2/database';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Cookie } from 'ng2-cookies';
 import { UserService } from '../shared/user.service';
 
@@ -13,6 +13,9 @@ import { UserService } from '../shared/user.service';
 export class LoginUserComponent implements OnInit {
   loginError = false;
   errorMessage;
+  actionSeccessful = false;
+  successMessage;
+
   state: string = '';
   error: any;
   user: any;
@@ -20,9 +23,44 @@ export class LoginUserComponent implements OnInit {
   users;
 
 
-  constructor(public afAuth: AngularFireAuth, private db: AngularFireDatabase,
-   private router: Router, private userService: UserService) {
+  constructor(
+    public afAuth: AngularFireAuth,
+    private db: AngularFireDatabase,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private userService: UserService) {
     this.user = afAuth.authState;
+  }
+
+  ngOnInit() {
+    this.loginError = false;
+    // subscribe to router event
+    this.activatedRoute.queryParams.subscribe(
+      (params: Params) => {
+        if (!params) {return; }
+        const mode = params['mode'];
+        const oobCode = params['oobCode'];
+        const apiKey = params['apiKey'];
+        console.log(params, mode, oobCode, apiKey);
+        if (mode && oobCode && mode === 'verifyEmail' ) {
+          this.afAuth.auth.applyActionCode(oobCode)
+          .then(
+            () => {
+              console.log('applyActionCode then');
+              this.actionSeccessful = true;
+              this.successMessage = 'Email confirmed';
+            }
+          )
+          .catch(
+            (e) => {
+              console.log('applyActionCode catch');
+              this.loginError = true;
+              this.errorMessage = e.message;
+            }
+          );
+        }
+        console.log(mode, oobCode, apiKey);
+      });
   }
 
   subscribeOnAuthState () {
@@ -124,9 +162,4 @@ export class LoginUserComponent implements OnInit {
     localStorage.removeItem('userInfo');
     this.router.navigate([ '/login' ]);
   }
-
-  ngOnInit() {
-    this.loginError = false;
-  }
-
 }

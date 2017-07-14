@@ -46,9 +46,11 @@ export class SignupComponent implements OnInit {
       let password =  formData.value.password;
       this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(
         (authUser: firebase.User) => {
-          this.db.list('users').update(authUser.uid,{
+          this.db.list('users').update(authUser.uid, {
             name: name,
             email: email,
+            status: 'unpaid',
+            role: 'manager'
           });
 
           // create shop

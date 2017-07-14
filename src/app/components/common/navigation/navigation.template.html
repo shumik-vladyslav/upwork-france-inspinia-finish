@@ -20,12 +20,8 @@
           IN+
         </div>
       </li>
-      <li [ngClass]="{active: activeRoute('dashboards')}" *ngIf="isCanSee('manager','seller','dashboards')">
-        <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboard</span> <span class="fa arrow"></span> </a>
-        <ul class="nav nav-second-level collapse" [ngClass]="{in: activeRoute('dashboards')}">
-          <li [ngClass]="{active: activeRoute('dashboard1')}"><a [routerLink]="['/dashboards/main-view']">Main view</a></li>
-          <li [ngClass]="{active: activeRoute('dashboard1')}"><a [routerLink]="['/dashboards/cash']">Cash</a></li>
-        </ul>
+      <li [ngClass]="{active: activeRoute('/dashboards/main-view')}" *ngIf="isCanSee('manager','seller','clients')">
+        <a [routerLink]="['/dashboards/main-view']"><i class="fa fa-diamond"></i> <span class="nav-label">Dashboard</span></a>
       </li>
       <li [ngClass]="{active: activeRoute('clients')}" *ngIf="isCanSee('manager','seller','clients')">
         <a [routerLink]="['/clients']"><i class="fa fa-diamond"></i> <span class="nav-label">Clients</span></a>

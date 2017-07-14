@@ -8,7 +8,7 @@ import { AuthGuard } from '../auth.service';
 
 declare var jQuery: any;
 declare var $: any;
-
+declare var FooTable: any;
 class Product {
   $key;
   name;
@@ -48,18 +48,32 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   // shop activity log
   activityLog;
 
+  // disable controll buttons if shop is unpaid
+  dsblCtrlBtns = false;
+  productsTable = [];
+
   constructor(
     public db: AngularFireDatabase,
     private router: Router,
     public afAuth: AngularFireAuth,
     private authServ: AuthGuard) {
+    if ( authServ.userInfo.status === 'unpaid' ) {
+        this.dsblCtrlBtns = true;
+    }
     this.products = db.list(`/shops/${this.authServ.userId}/products`);
     this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
+    this.products.subscribe (
+      products => {
+        this.productsTable = products;
+        setTimeout(() => {
+             FooTable.init('.footable');
+        }, 400 );
+      }
+    );
   }
 
   public ngOnInit(): any {
     // const self = this;
-    footable();
     $('#tags').tagsinput('items');
     // fetch categories
     this.authServ.fetchUserSettings().subscribe(
@@ -72,7 +86,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-     footable();
   }
 
   onCreate(form: NgForm) {

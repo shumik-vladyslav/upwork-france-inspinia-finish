@@ -5,6 +5,7 @@ import { Cookie } from 'ng2-cookies';
 import { UserService } from '../shared/user.service';
 import { AngularFireDatabase, FirebaseObjectObservable} from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AuthGuard } from '../auth.service';
 
 @Component({
   selector: 'payment',
@@ -26,7 +27,7 @@ export class PaymentComponent implements OnInit {
   errorMessage = '';
 
   ngOnInit(): void {
-      this.firebaseUserKey =  JSON.parse(Cookie.getAll()['User']).firebaseKey;
+      this.firebaseUserKey =  this.authServ.userId;
 
       // initialize checkboxes array
       for (let x = 0; x < this.options.length; x++) {
@@ -69,6 +70,7 @@ export class PaymentComponent implements OnInit {
     private route: ActivatedRoute,
     public db: AngularFireDatabase,
     public afAuth: AngularFireAuth,
+    private authServ: AuthGuard
     ) {
     }
 

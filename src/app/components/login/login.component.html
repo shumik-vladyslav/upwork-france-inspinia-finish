@@ -10,6 +10,9 @@
         <div *ngIf="loginError" class="alert alert-danger">
           {{errorMessage}}
         </div>
+        <div *ngIf="actionSeccessful" class="alert alert-success">
+          {{successMessage}}
+        </div>
       </div>
       <div class="form-group">
         <input (ngModel)="email" name="email" type="email" class="form-control" placeholder="Email" required="">

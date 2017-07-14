@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ViewEncapsulation } from '@angular/core';
 import { footable } from '../../app.helpers';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { Router, ActivatedRoute, Params} from '@angular/router';
@@ -8,6 +8,7 @@ import { AuthGuard } from '../auth.service';
 
 declare var jQuery: any;
 declare var $: any;
+declare var FooTable: any;
 
 export class Order {
   // firabase key
@@ -87,7 +88,9 @@ export class Order {
 
 @Component({
   selector: 'orders',
-  templateUrl: 'orders.template.html'
+  templateUrl: 'orders.template.html',
+  styleUrls: ['./orders.template.css'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class OrdersComponent implements OnInit {
@@ -111,15 +114,29 @@ export class OrdersComponent implements OnInit {
   priceMethods;
   selectedPriceMethos;
   selectedOrderId;
-  
+
   // shop activity log
   activityLog;
 
+  // disable controll buttons if shop is unpaid
+  dsblCtrlBtns = false;
+
+  ordersTableSource;
   constructor(public db: AngularFireDatabase,
    private router: Router,
     private route: ActivatedRoute,
     private authServ: AuthGuard) {
+
+    if ( authServ.userInfo.status === 'unpaid' ) {
+      this.dsblCtrlBtns = true;
+    }
     this.orders = db.list(`/shops/${authServ.userId}/orders`);
+    this.orders.subscribe(
+      orders => {
+        this.ordersTableSource = orders;
+        setTimeout(() => {FooTable.init('#footable')} , 300 );
+      }
+    );
     this.clients = db.list(`/shops/${authServ.userId}/clients`);
     this.productsFrbsCollection = db.list(`/shops/${authServ.userId}/products`);
     this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
@@ -127,12 +144,22 @@ export class OrdersComponent implements OnInit {
 
       this.totalOrders = snapshots.length;
     });
+    // FooTable.init('#footable', {'rows': this.orders.toPromise});
   }
 
   public ngOnInit(): void {
     this.route.params.subscribe(
       (params: Params) => {
-          this.selectedOrderId = params['id'];
+          const key = params['id'];
+          if (!key) {return; }
+          this.onRead(key);
+          // this.db.object(`/shops/${this.authServ.userId}/orders/${key}`).subscribe(
+          //   order => {
+          //     console.log('order', order);
+          //     this.editOrderModel = order;
+          //     $('#edit-form').modal('toggle');
+          //   }
+          // );
       }
     );
     this.invalidProducts = true;
@@ -149,7 +176,7 @@ export class OrdersComponent implements OnInit {
         },
         error => console.log(`error: ${error.message}`)
       );
-    footable();
+    // footable();
     // setInterval(() => {
     //   this.invalidProducts = !this.invalidProducts;
     // }, 1000)
@@ -231,8 +258,11 @@ export class OrdersComponent implements OnInit {
     this.createOrderModel = new Order(this);
   }
 
-  onRead(id) {
-    this.db.object(`/shops/${this.authServ.userId}/orders/${id}`).subscribe((snapshots: Order) => {
+  onRead(key) {
+    $('#edit-form').modal('toggle');
+    this.db.object(`/shops/${this.authServ.userId}/orders/${key}`).subscribe((snapshots: Order) => {
+
+      this.editOrderModel  = snapshots;
       this.editOrderModel = new Order(this);
       for (var key in snapshots) {
         if (snapshots.hasOwnProperty(key)) {
@@ -250,21 +280,19 @@ export class OrdersComponent implements OnInit {
           console.log(shNamse);
 
           this.editOrderModel.availableProducts = products
-          .filter(i => shNamse.indexOf(i.name)==-1)
+          .filter(i => shNamse.indexOf(i.name) == -1)
           .map(i => {i.bayQt = i.quantity; return i; });
           console.log(this.editOrderModel);
 
           setTimeout(() => {
-            console.log(snapshots.priceMethod);
-            // $('#payMeth').val(null);
+              console.log(snapshots.priceMethod);
               $('#payMeth').chosen();
               $('#payMeth').val(snapshots.priceMethod);
               $('#payMeth').trigger('chosen:updated');
-              $('#payMeth').on('change', (e) => {
-                console.log($('#payMeth').val());
-              });
+              $('#payMeth').on('change', (e) => { console.log($('#payMeth').val()); });
+              $('.chosen-container').css('width', '100%');
             }
-          , 200);
+          , 400);
         }
       );
     });
@@ -277,7 +305,6 @@ export class OrdersComponent implements OnInit {
     if ( order.status == 'pending') {
       order.statusClass = false;
     }
-    console.log(order.products);
     order.priceMethod = $('#payMeth').val();
     order.quantity = +this.editOrderModel.quantity;
     this.db.list(`/shops/${this.authServ.userId}/products`).subscribe(
@@ -303,6 +330,5 @@ export class OrdersComponent implements OnInit {
 
   onChangeProduct(event) {
     console.log(event);
-
   }
 }

@@ -21,7 +21,8 @@
         </div>
       </li>
       <li [ngClass]="{active: activeRoute('/dashboards/main-view')}" *ngIf="isCanSee('manager','seller','clients')">
-        <a [routerLink]="['/dashboards/main-view']"><i class="fa fa-diamond"></i> <span class="nav-label">Dashboard</span></a>
+        <a [routerLink]="['/dashboards/main-view']"><i class="fa fa-diamond"></i> <span
+          class="nav-label">Dashboard</span></a>
       </li>
       <li [ngClass]="{active: activeRoute('clients')}" *ngIf="isCanSee('manager','seller','clients')">
         <a [routerLink]="['/clients']"><i class="fa fa-diamond"></i> <span class="nav-label">Clients</span></a>
@@ -45,27 +46,32 @@
       <li [ngClass]="{active: activeRoute('shops')}" *ngIf="isCanSee('admin','admin-user','shops')">
         <a [routerLink]="['/shops']"><i class="fa fa-flask"></i> <span class="nav-label">Shops</span></a>
       </li>
-      <li [ngClass]="{active: activeRoute('adminmess')}" *ngIf="isCanSee('admin','admin-user','adminmess')">
-        <a [routerLink]="['/adminmess']"><i class="fa fa-flask"></i> <span class="nav-label">Messages</span></a>
-      </li>
-      <li [ngClass]="{active: activeRoute('adminmail')}" *ngIf="isCanSee('admin','admin-user','adminmail')">
-        <a [routerLink]="['/adminmail']"><i class="fa fa-flask"></i> <span class="nav-label">eMails</span></a>
-      </li>
+      <!--<li [ngClass]="{active: activeRoute('adminmess')}" *ngIf="isCanSee('admin','admin-user','adminmess')">-->
+        <!--<a [routerLink]="['/adminmess']"><i class="fa fa-flask"></i> <span class="nav-label">Messages</span></a>-->
+      <!--</li>-->
+      <!--<li [ngClass]="{active: activeRoute('adminmail')}" *ngIf="isCanSee('admin','admin-user','adminmail')">-->
+        <!--<a [routerLink]="['/adminmail']"><i class="fa fa-flask"></i> <span class="nav-label">eMails</span></a>-->
+      <!--</li>-->
       <!-- end admin menu -->
       <li [ngClass]="{active: activeRoute('preferences')}">
-        <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">Preferences</span> <span class="fa arrow"></span> </a>
+        <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">Preferences</span> <span class="fa arrow"></span>
+        </a>
         <ul class="nav nav-second-level collapse" [ngClass]="{in: activeRoute('preferences')}">
           <!-- *ngIf="role=='admin'" -->
-          <li [ngClass]="{active: activeRoute('users')}" >
-            <a [routerLink]="['/users']"><span class="nav-label" *ngIf="isCanSee('admin','admin-user','users')">Users</span></a>
+          <li [ngClass]="{active: activeRoute('users')}">
+            <a [routerLink]="['/users']"><span class="nav-label"
+                                               *ngIf="isCanSee('admin','admin-user','users')">Users</span></a>
           </li>
           <li [ngClass]="{active: activeRoute('sellers')}" *ngIf="isCanSee('manager','seller','sellers')">
             <a [routerLink]="['/sellers']"><span class="nav-label">Sellers</span></a>
           </li>
           <li [ngClass]="{active: activeRoute('profil')}"><a [routerLink]="['/preferences/profil']">Profil</a></li>
-          <li [ngClass]="{active: activeRoute('payment')}" *ngIf="isCanSee('manager','seller','payment')"><a [routerLink]="['/preferences/payment']">Payment</a></li>
-          <li [ngClass]="{active: activeRoute('messages')}" *ngIf="isCanSee('manager','seller','messages')"><a [routerLink]="['/preferences/messages']">Messages</a></li>
-          <li [ngClass]="{active: activeRoute('subscription')}" *ngIf="isCanSee('manager','seller','subscription')"><a [routerLink]="['/preferences/subscription']">Subscription</a></li>
+          <li [ngClass]="{active: activeRoute('payment')}" *ngIf="isCanSee('manager','seller','payment')"><a
+            [routerLink]="['/preferences/payment']">Payment</a></li>
+          <li [ngClass]="{active: activeRoute('messages')}" *ngIf="isCanSee('manager','seller','messages')"><a
+            [routerLink]="['/preferences/messages']">Messages</a></li>
+          <li [ngClass]="{active: activeRoute('subscription')}" *ngIf="isCanSee('manager','seller','subscription')"><a
+            [routerLink]="['/preferences/subscription']">Subscription</a></li>
         </ul>
       </li>
     </ul>

@@ -133,17 +133,17 @@ export class OrdersComponent implements OnInit {
     this.orders = db.list(`/shops/${authServ.userId}/orders`);
     this.orders.subscribe(
       orders => {
+        console.log('orders update');
+        console.log(orders);
+        
         this.ordersTableSource = orders;
-        setTimeout(() => {FooTable.init('#footable')} , 300 );
+        this.totalOrders = orders.length;
+        setTimeout(() => {FooTable.init('#footable')} , 500 );
       }
     );
     this.clients = db.list(`/shops/${authServ.userId}/clients`);
     this.productsFrbsCollection = db.list(`/shops/${authServ.userId}/products`);
     this.activityLog = db.list(`/shops/${authServ.userId}/activityLog`);
-    this.db.list(`/shops/${authServ.userId}/orders`).subscribe(snapshots => {
-
-      this.totalOrders = snapshots.length;
-    });
     // FooTable.init('#footable', {'rows': this.orders.toPromise});
   }
 
@@ -152,14 +152,9 @@ export class OrdersComponent implements OnInit {
       (params: Params) => {
           const key = params['id'];
           if (!key) {return; }
+          console.log('idiiididiid');
+          
           this.onRead(key);
-          // this.db.object(`/shops/${this.authServ.userId}/orders/${key}`).subscribe(
-          //   order => {
-          //     console.log('order', order);
-          //     this.editOrderModel = order;
-          //     $('#edit-form').modal('toggle');
-          //   }
-          // );
       }
     );
     this.invalidProducts = true;
@@ -176,28 +171,7 @@ export class OrdersComponent implements OnInit {
         },
         error => console.log(`error: ${error.message}`)
       );
-    // footable();
-    // setInterval(() => {
-    //   this.invalidProducts = !this.invalidProducts;
-    // }, 1000)
-
-    // setTimeout(() => {
-    //   for(let i = 0; i < 12; i++){
-    //     let order = new Order();
-    //     order.orderId = i + 1;
-    //     order.date = new Date(2017, i, i).getTime();
-    //     order.orderSum = i + 1;
-    //     order.clientName = "JonDirr";
-    //     console.log(i, order)
-    //     this.orders.update(order.orderSum.toString(), order);
-    //   }
-    // }, 5000);
   }
-
-  // onChangeProducts() {
-  //   console.log("onChangeProducts");
-
-  // }
 
   onCreateDialogShow(): void {
       this.productsFrbsCollection.subscribe(snapshots => {
@@ -205,24 +179,15 @@ export class OrdersComponent implements OnInit {
         // this.createOrderModel
         let self = this;
         setTimeout(() => {
-            // $('#products').val(['while', 'erere']);
-            console.log($('#products').val());
-
-            // $('#products').trigger('chosen:updated');
             $('#products').chosen();
             $('#products').on('change', function(e) {
               // triggers when whole value changed
-              console.log($('#products').val());
-              console.log(this.products);
               const val = $('#products').val();
               if (!val || val.length == 0 ) {
                 console.log('op');
                 self.invalidProducts = true;
-                // this.invalidProducts = !this.invalidProducts;
               } else {
-                console.log('tr');
                 self.invalidProducts = false;
-                // this.invalidProducts = false;
               }
             });
           }
@@ -240,11 +205,13 @@ export class OrdersComponent implements OnInit {
       order.statusClass = false;
     }
     order.date = Date.now();
-    order.orderSum = 0;
+    // order.orderSum = 0;
     order.orderId = this.totalOrders;
 
+    delete order.availableProducts;
+    delete order.moveToShopCart;
     delete order.component;
-
+    
     // save to firebase
     this.orders.push(order);
     this.activityLog.push({date: Date.now(), activity: 'new order'});
@@ -275,15 +242,16 @@ export class OrdersComponent implements OnInit {
       this.db.list(`/shops/${this.authServ.userId}/products`).subscribe(
         products => {
           const prNames = products.map(e => e.name);
-          console.log(prNames);
           const shNamse = this.editOrderModel.shopCart.map(e => e.name);
-          console.log(shNamse);
 
           this.editOrderModel.availableProducts = products
           .filter(i => shNamse.indexOf(i.name) == -1)
-          .map(i => {i.bayQt = i.quantity; return i; });
-          console.log(this.editOrderModel);
+          .map(i => {i.bayQt = i.quantity; return i; }); 
 
+          if (this.editOrderModel.shopCart.length !== 0){
+            this.invalidProducts = false;
+          }
+          
           setTimeout(() => {
               console.log(snapshots.priceMethod);
               $('#payMeth').chosen();
@@ -313,6 +281,8 @@ export class OrdersComponent implements OnInit {
         const key = order.$key;
         delete order.$key;
         delete order.component;
+        delete order.availableProducts;
+        delete order.moveToShopCart;
 
         this.orders.update(key, order);
         this.activityLog.push({date: Date.now(), activity: 'update order', key: key});

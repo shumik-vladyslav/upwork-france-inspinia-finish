@@ -1,13 +1,13 @@
-import { Component, OnDestroy, OnInit, } from '@angular/core';
-import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import { FlotChartDirective } from '../../components/charts/flotChart';
-import { Cookie } from 'ng2-cookies';
-import { footable } from '../../app.helpers';
-import { slimscroll } from '../../app.helpers';
-import { List } from 'linqts';
-import { Order } from '../orders/orders.component';
-import { AuthGuard } from '../auth.service';
-import { ChatMessage } from '../../models/ChatMessage';
+import {Component, OnDestroy, OnInit,} from '@angular/core';
+import {AngularFireDatabase, FirebaseListObservable} from 'angularfire2/database';
+import {FlotChartDirective} from '../../components/charts/flotChart';
+import {Cookie} from 'ng2-cookies';
+import {footable} from '../../app.helpers';
+import {slimscroll} from '../../app.helpers';
+import {List} from 'linqts';
+import {Order} from '../orders/orders.component';
+import {AuthGuard} from '../auth.service';
+import {ChatMessage} from '../../models/ChatMessage';
 
 declare var jQuery: any;
 declare var $: any;
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
 
   // for ui orders table
   ordersTable2;
-  infos= [];
+  infos = [];
 
   orderPercent;
   lastOrderPercent;
@@ -110,16 +110,17 @@ export class DashboardComponent implements OnDestroy, OnInit {
   onRowsPerPageChange() {
     FooTable.get('.footable').pageSize(this.rowsPerPage);
   }
+
   public constructor(public db: AngularFireDatabase,
-    private authServ: AuthGuard) {
-      this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(
-        orders => {
-          this.ordersListForTable = orders;
-          setTimeout(() => {
-            FooTable.init('.footable');
-          }, 300 );
-        }
-      );
+                     private authServ: AuthGuard) {
+    this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(
+      orders => {
+        this.ordersListForTable = orders;
+        setTimeout(() => {
+          FooTable.init('.footable');
+        }, 300);
+      }
+    );
 
     if (true) {
       this.db.object(`/chats/${this.authServ.userId}/unrUsrMsgs`).subscribe(
@@ -133,7 +134,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
         }
       );
     }
-    this.chatMessages.subscribe (
+    this.chatMessages.subscribe(
       mess => {
         // if (!this.openChat) {
         //   this.newMessagesNum = mess.length - this.messages.length + this.newMessagesNum;
@@ -149,7 +150,7 @@ export class DashboardComponent implements OnDestroy, OnInit {
     db.list(`/shops/${this.authServ.userId}/products`).subscribe(
       products => {
         console.log('products fetched');
-        this.stockAlertProducts = products.filter( p => !p.isService && (p.quantity < p.stockAlert));
+        this.stockAlertProducts = products.filter(p => !p.isService && (p.quantity < p.stockAlert));
       }
     );
 
@@ -163,13 +164,13 @@ export class DashboardComponent implements OnDestroy, OnInit {
     this.monthSort();
     // this.yearsSort();
     const now = new Date();
-    const lastMonth = new Date (now.getFullYear(), now.getMonth()).getMonth();
-    const prevMonth = new Date (now.getFullYear(), now.getMonth() - 1).getMonth();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth()).getMonth();
+    const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1).getMonth();
 
     this.ordersTable = db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
 
       const lastDay = now.getDate();
-      const prevDay = new Date (now.getFullYear(), now.getMonth(), lastDay - 1 ).getDate();
+      const prevDay = new Date(now.getFullYear(), now.getMonth(), lastDay - 1).getDate();
 
       this.dailySales = snapshots.filter(o => new Date(o.date).getDate() == lastDay && o.paid == 'paid').length;
       const prevDaySales = snapshots.filter(o => new Date(o.date).getDate() == prevDay && o.paid == 'paid').length;
@@ -209,74 +210,75 @@ export class DashboardComponent implements OnDestroy, OnInit {
     });
 
     this.db.list(`/shops/${this.authServ.userId}/clients`).subscribe(
-        clients => {
-          this.newClients = clients.filter(c => c.date > lastMonth).length;
-          const newClientsPrevMonth = clients.filter(c => (new Date(c.date)).getMonth() == prevMonth).length;
-          this.newClientsPercent = Math.floor(this.newClients / newClientsPrevMonth * 100);
-        },
-        error => console.log('fetch clients errr ' + error)
-      );
+      clients => {
+        this.newClients = clients.filter(c => c.date > lastMonth).length;
+        const newClientsPrevMonth = clients.filter(c => (new Date(c.date)).getMonth() == prevMonth).length;
+        this.newClientsPercent = Math.floor(this.newClients / newClientsPrevMonth * 100);
+      },
+      error => console.log('fetch clients errr ' + error)
+    );
   }
 
   offersFilter(period: string) {
     // FooTable.get('.footable')
     console.log('offersFilter');
-    $('#yea').removeClass('active');
-    $('#mon').removeClass('active');
-    $('#day').removeClass('active');
+    // $('#yea').removeClass('active');
+    // $('#mon').removeClass('active');
+    // $('#day').removeClass('active');
 
     let dataThreshold;
     const date = new Date();
     switch (period) {
       case 'day':
-        $('#day').addClass('active');
-        dataThreshold =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
+        // $('#day').addClass('active');
+        dataThreshold = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         break;
       case 'month':
-        $('#mon').addClass('active');
+        // $('#mon').addClass('active');
         dataThreshold = new Date(date.getFullYear(), date.getMonth());
         break;
       case 'year':
-        $('#yea').addClass('active');
+        // $('#yea').addClass('active');
         dataThreshold = new Date(date.getFullYear());
         break;
       default:
         break;
     }
     this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(
-        orders => {
-          this.ordersListForTable = orders.filter(o => o.date > dataThreshold);
-          setTimeout(() => {
-            FooTable.init('.footable');
-          }, 300 );
-        }
+      orders => {
+        this.ordersListForTable = orders.filter(o => o.date > dataThreshold);
+        setTimeout(() => {
+          FooTable.init('.footable');
+        }, 300);
+      }
     );
   }
- updateChartDatasets (orders, income = []) {
+
+  updateChartDatasets(orders, income = []) {
     this.flotDataset = [
-        {
-          label: 'Number of orders',
-          data: orders,
-          color: '#1ab394',
-          bars: {
-            fill: true,
-            show: true,
-            align: 'center',
-            barWidth: this.barWidth,
-            // lineWidth: 2
-          }
-        },
-        {
-          label: 'Income',
-          data: income,
-          color: '#1c84c6',
-          series: {
-              lines: { show: true },
-              points: { show: true }
-          }
-          , yaxis: 2
+      {
+        label: 'Number of orders',
+        data: orders,
+        color: '#1ab394',
+        bars: {
+          fill: true,
+          show: true,
+          align: 'center',
+          barWidth: this.barWidth,
+          // lineWidth: 2
         }
-      ];
+      },
+      {
+        label: 'Income',
+        data: income,
+        color: '#1c84c6',
+        series: {
+          lines: {show: true},
+          points: {show: true}
+        }
+        , yaxis: 2
+      }
+    ];
   }
 
   onSearchOrderClick() {
@@ -289,12 +291,16 @@ export class DashboardComponent implements OnDestroy, OnInit {
     // slimscroll();
     // Initialize slimscroll for small chat
     let chtDomEl = $('.small-chat-box .content').slimScroll({
-        height: '234px',
-        railOpacity: 0.4
+      height: '234px',
+      railOpacity: 0.4
     });
-    this.authServ.fetchUserSettings().subscribe (
-      sett =>  this.selfName = sett.name
+    this.authServ.fetchUserSettings().subscribe(
+      sett => this.selfName = sett.name
     );
+
+    $(".btn-group > .btn").click(function () {
+      $(this).addClass("active").siblings().removeClass("active");
+    });
   }
 
   public ngOnDestroy(): any {
@@ -316,104 +322,112 @@ export class DashboardComponent implements OnDestroy, OnInit {
     return new Date(date.getFullYear(), date.getMonth()).getTime();
   }
 
-  prepareDatasetForChartIncome(orders: List<Order>, roundDataFunction){
-    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => +o.orderSum);
-        let data = [];
-        for (let key in result) {
-          if (result.hasOwnProperty(key)) {
-            let element = result[key];
-            let temp = element.reduce((acc, item) => acc += item, 0);
-            data.push([+key, element.reduce((acc, item) => acc += item, 0)]);
-          }
-        }
-        return data.sort((a, b) => {
-          if (a[0] < b[0]) {return -1; }
-          if (a[0] > b[0]) {return 1; }
-          return 0;
-        });
+  prepareDatasetForChartIncome(orders: List<Order>, roundDataFunction) {
+    let result = orders.GroupBy(order => roundDataFunction(order.date), o => +o.orderSum);
+    let data = [];
+    for (let key in result) {
+      if (result.hasOwnProperty(key)) {
+        let element = result[key];
+        let temp = element.reduce((acc, item) => acc += item, 0);
+        data.push([+key, element.reduce((acc, item) => acc += item, 0)]);
+      }
+    }
+    return data.sort((a, b) => {
+      if (a[0] < b[0]) {
+        return -1;
+      }
+      if (a[0] > b[0]) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
-  prepareDatasetForChartOrders(orders: List<Order>, roundDataFunction){
-    let result = orders.GroupBy(order => roundDataFunction(order.date),  o => 1);
-    
-        let data = [];
-        for (let key in result) {
-          if (result.hasOwnProperty(key)) {
-            let element = result[key];
-            let temp = element.reduce((acc, item) => acc += item, 0);
-            data.push([key, element.reduce((acc, item) => acc += item, 0)]);
-          }
-        }
-        return data.sort((a, b) => {
-          if (a[0] < b[0]) {return -1; }
-          if (a[0] > b[0]) {return 1; }
-          return 0;
-        });
+  prepareDatasetForChartOrders(orders: List<Order>, roundDataFunction) {
+    let result = orders.GroupBy(order => roundDataFunction(order.date), o => 1);
+
+    let data = [];
+    for (let key in result) {
+      if (result.hasOwnProperty(key)) {
+        let element = result[key];
+        let temp = element.reduce((acc, item) => acc += item, 0);
+        data.push([key, element.reduce((acc, item) => acc += item, 0)]);
+      }
+    }
+    return data.sort((a, b) => {
+      if (a[0] < b[0]) {
+        return -1;
+      }
+      if (a[0] > b[0]) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
   yearsSort() {
-    this.barWidth= 15 * 24 * 60 * 60 * 1000;
-     this.flotOptionsTemplate.xaxis.tickSize = [1, 'month'];
-    this.flotOptions= this.flotOptionsTemplate;
+    this.barWidth = 15 * 24 * 60 * 60 * 1000;
+    this.flotOptionsTemplate.xaxis.tickSize = [1, 'month'];
+    this.flotOptions = this.flotOptionsTemplate;
 
     this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
       let orders = new List<Order>(snapshots);
-        let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
-        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
+      let income = this.prepareDatasetForChartIncome(orders, this.getMonthOfTimeStamp);
+      let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getMonthOfTimeStamp);
 
-        setTimeout(() => {
-          this.updateChartDatasets(letOrdersData, income);
+      setTimeout(() => {
+        this.updateChartDatasets(letOrdersData, income);
 
-        }, 2000);
+      }, 2000);
     });
   }
 
   monthSort() {
-    this.barWidth= 12 * 60 * 60 * 1000;
+    this.barWidth = 12 * 60 * 60 * 1000;
     const date = new Date();
-    let currentMonth =  new Date(date.getFullYear(), date.getMonth());
+    let currentMonth = new Date(date.getFullYear(), date.getMonth());
 
     this.flotOptionsTemplate.xaxis.tickSize = [1, 'day'];
-    this.flotOptions= this.flotOptionsTemplate;
+    this.flotOptions = this.flotOptionsTemplate;
 
     this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
-    let orders = new List<Order>(snapshots.filter(s => s.date > currentMonth));
-        // let orders = new List<Order>(snapshots);
-        let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
-        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getDateOfTimeStamp);
+      let orders = new List<Order>(snapshots.filter(s => s.date > currentMonth));
+      // let orders = new List<Order>(snapshots);
+      let income = this.prepareDatasetForChartIncome(orders, this.getDateOfTimeStamp);
+      let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getDateOfTimeStamp);
 
-        setTimeout(() => {
-          this.updateChartDatasets(letOrdersData, income);
-        }, 2000);
-      });
+      setTimeout(() => {
+        this.updateChartDatasets(letOrdersData, income);
+      }, 2000);
+    });
   }
 
   daySort() {
-    this.barWidth= 30 * 60 * 1000;
+    this.barWidth = 30 * 60 * 1000;
     const date = new Date();
-    let currentDay =  new Date(date.getFullYear(), date.getMonth(),date.getDate());
+    let currentDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
     this.flotOptionsTemplate.xaxis.tickSize = [3, 'hour'];
-    this.flotOptions= this.flotOptionsTemplate;
+    this.flotOptions = this.flotOptionsTemplate;
     this.ordersTable = this.db.list(`/shops/${this.authServ.userId}/orders`).subscribe(snapshots => {
-    let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
+      let orders = new List<Order>(snapshots.filter(s => s.date > currentDay));
 
-        let income = this.prepareDatasetForChartIncome(orders, this.getHoursOfTimeStamp);
-        let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
+      let income = this.prepareDatasetForChartIncome(orders, this.getHoursOfTimeStamp);
+      let letOrdersData = this.prepareDatasetForChartOrders(orders, this.getHoursOfTimeStamp);
 
-        setTimeout(() => {
-          this.updateChartDatasets(letOrdersData, income);
-        }, 2000);
-      });
+      setTimeout(() => {
+        this.updateChartDatasets(letOrdersData, income);
+      }, 2000);
+    });
   }
 
   onChatToggle() {
     console.log('chat toggle');
 
-    this.openChat =  !this.openChat;
+    this.openChat = !this.openChat;
 
     // renew unreaded counter
-    this.db.list(`/chats`).update(this.authServ.userId, { unrUsrMsgs: null});
+    this.db.list(`/chats`).update(this.authServ.userId, {unrUsrMsgs: null});
 
     console.log(this.openChat);
   }
@@ -421,17 +435,17 @@ export class DashboardComponent implements OnDestroy, OnInit {
   onSendChatMess(text) {
     const mess = new ChatMessage(this.selfName, text);
     // this.newMessagesNum = null;
-    this.db.list(`/chats`).update(this.authServ.userId, { unrUsrMsgs: null});
+    this.db.list(`/chats`).update(this.authServ.userId, {unrUsrMsgs: null});
     // push to firebase
     this.chatMessages.push(mess);
 
-    this.db.object(`/chats/${this.authServ.userId}/newMessCounter`).take(1).subscribe (
+    this.db.object(`/chats/${this.authServ.userId}/newMessCounter`).take(1).subscribe(
       counter => {
         console.log(counter);
         if (!counter.$value) {
           counter.$value = 0;
         }
-        this.db.list(`/chats`).update(this.authServ.userId, { newMessCounter: counter.$value + 1});
+        this.db.list(`/chats`).update(this.authServ.userId, {newMessCounter: counter.$value + 1});
       }
     );
   }

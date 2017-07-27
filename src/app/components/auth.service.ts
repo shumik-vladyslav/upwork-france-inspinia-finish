@@ -60,7 +60,6 @@ export class AuthGuard implements CanActivate {
       console.log(route.url[0].path);
     }
 
-
     if (
       this.userInfo &&
       this.userInfo.routes &&

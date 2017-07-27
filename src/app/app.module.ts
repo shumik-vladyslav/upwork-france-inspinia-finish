@@ -7,7 +7,7 @@ import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 
 
 
-import {ROUTES} from "./app.routes";
+import { ROUTES } from "./app.routes";
 import { AppComponent } from './app.component';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -28,7 +28,7 @@ import { ProfilComponent } from "./components/profil/profil.component";
 import { UserService } from "./components/shared/user.service";
 import { PaymentComponent } from "./components/payment/payment.component";
 import { MessagesComponent } from "./components/messages/messages.component";
-import {AuthGuard} from "./components/auth.service";
+import { AuthGuard } from "./components/auth.service";
 
 import { Ng2Summernote } from 'ng2-summernote/ng2-summernote';
 
